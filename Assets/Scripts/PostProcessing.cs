@@ -14,6 +14,8 @@ public class PostProcessing : MonoBehaviour
     public class Settings
     {
         public int screenHeight = 192;
+        public Color outlineColor = Color.black;
+        public Color edgeColor = Color.white;
         public float depthThreshold = 0.02f;
         public float normalThreshold = 0.05f;
         public Vector3 normalEdgeBias = Vector3.one;
@@ -149,6 +151,8 @@ public class PostProcessing : MonoBehaviour
         outline.SetFloat("_NormalThreshold", _settings.normalThreshold);
         outline.SetVector("_NormalEdgeBias", _settings.normalEdgeBias);
         outline.SetInteger("_DebugOutline", _settings.debugOutline ? 1 : 0);
+        outline.SetColor("_OutlineColor", _settings.outlineColor);
+        outline.SetColor("_EdgeColor", _settings.edgeColor);
 
         var pixelScreenHeight = _settings.screenHeight;
         var pixelScreenWidth = (int)(pixelScreenHeight * _mainCamera.aspect + 0.5f);

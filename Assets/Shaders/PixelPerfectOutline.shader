@@ -36,12 +36,19 @@ Shader "Custom/PixelPerfectOutline"
             sampler2D _CameraDepthNormalsTexture;
 
             float2 _ScreenSize;
+
             float _DepthThreshold;
-            float _AngleThreshold;
-            float _AngleFactorScale;
             float _NormalThreshold;
             float3 _NormalEdgeBias;
+
+            float _AngleThreshold;
+            float _AngleFactorScale;
+
             bool _DebugOutline;
+
+            float4 _OutlineColor;
+            float4 _EdgeColor;
+            float _ColorShift;
 
             #define SAMPLE_DEPTH_NORMAL(uv, name) \
                 float name##Depth; \
@@ -118,7 +125,6 @@ Shader "Custom/PixelPerfectOutline"
 
                 PassValue edge = { depth, normal };
                 return edge;
-
             }
 
             v2f vert(appdata v)
@@ -131,11 +137,9 @@ Shader "Custom/PixelPerfectOutline"
 
             fixed4 frag(v2f i) : SV_Target
             {
-                float colorShift = 0.5;
-                fixed4 color = tex2D(_MainTex, i.uv);
-
-                fixed4 outlineColor = lerp(color, fixed4(0, 0, 0, 1), colorShift);
-                fixed4 inlineColor = lerp(color, fixed4(1, 1, 1, 1), colorShift);
+                float4 color = tex2D(_MainTex, i.uv);
+                float4 outlineColor = float4(lerp(color.rgb, _OutlineColor.rgb, _OutlineColor.a), 1);
+                float4 edgeColor = float4(lerp(color.rgb, _EdgeColor.rgb, _EdgeColor.a), 1);
 
                 PassValue edge = edgePass(i.uv);
 
@@ -144,9 +148,8 @@ Shader "Custom/PixelPerfectOutline"
                 // Any depth overrides normal
                 edge.normal = step(edge.depth, 0) * edge.normal;
 
-                //return float4(edge.depth, edge.normal, 0, 1);
                 color = lerp(color, outlineColor, edge.depth);
-                color = lerp(color, inlineColor, edge.normal);
+                color = lerp(color, edgeColor, edge.normal);
 
                 return color;
             }
