@@ -44,10 +44,7 @@ Shader "Custom/GrassBlending"
                 fixed4 color = tex2D(_MainTex, i.uv);
                 fixed4 grassColor = tex2D(_GrassTex, i.uv);
 
-                
-                if (grassColor.a > 0)
-                    // color.rgb = grassColor.rgb;
-                    color.rgb = lerp(color.rgb, grassColor.rgb, grassColor.a);
+                color.rgb = lerp(color.rgb, grassColor.rgb, grassColor.a);
 
                 return color;
             }
