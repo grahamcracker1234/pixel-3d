@@ -1,19 +1,22 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using UnityEditor.PackageManager.UI;
+using System;
 
 [ExecuteInEditMode]
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshCollider))]
+[RequireComponent(typeof(MeshRenderer))]
 public class MeshGenerator : MonoBehaviour
 {
 	public Texture2D heightMap;
 	public Vector3 size = new Vector3(10, 3, 10);
 	public Vector2Int sampleCount = new Vector2Int(25, 25);
+	[HideInInspector] public MeshData meshData;
+	[HideInInspector] public Mesh mesh;
 
 	public MeshData GenerateTerrainMesh()
 	{
-		var meshData = new MeshData(sampleCount.x, sampleCount.y);
+		meshData = new MeshData(sampleCount.x, sampleCount.y);
 
 		var index = 0;
 		for (var y = 0; y < sampleCount.y; y++)
@@ -21,9 +24,9 @@ public class MeshGenerator : MonoBehaviour
 			for (var x = 0; x < sampleCount.x; x++)
 			{
 				var uv = new Vector2(x, y) / (sampleCount - Vector2.one);
-				var heightValue = GetMeshHeight(uv);
+				var vertex = (uv - Vector2.one / 2) * new Vector2(size.x, size.z);
 
-				var vertex = (uv - Vector2.one / 2) * new Vector2(size.x, size.z); ;
+				var heightValue = GetMeshHeightUV(uv);
 
 				meshData.vertices[index] = new Vector3(vertex.x, heightValue, vertex.y);
 				meshData.uvs[index] = uv;
@@ -38,21 +41,120 @@ public class MeshGenerator : MonoBehaviour
 			}
 		}
 
-		var meshFiler = GetComponent<MeshFilter>();
-		meshFiler.sharedMesh = meshData.CreateMesh();
-		GetComponent<MeshCollider>().sharedMesh = meshFiler.sharedMesh;
+		mesh = meshData.CreateMesh();
+
+		GetComponent<MeshFilter>().sharedMesh = mesh;
+		GetComponent<MeshCollider>().sharedMesh = mesh;
 
 		return meshData;
 	}
 
-	public float GetMeshHeight(Vector2 uv)
+	public float GetMeshHeightWorld(Vector3 worldPosition, Vector2 uv, bool debug = false)
+	{
+		// var localPoint = transform.InverseTransformPoint(worldPosition);
+		// var uv = new Vector3(localPoint.x - mesh.bounds.min.x, 0, localPoint.z - mesh.bounds.min.z) / size.z;
+
+		// Calculate spacing based on the mesh size and number of vertices
+		var xSpacing = size.x / (sampleCount.x - 1);
+		var zSpacing = size.z / (sampleCount.y - 1);
+
+		// Calculate the indices of the vertices around the point
+		var xIndex = Mathf.FloorToInt(uv.x * (sampleCount.x - 1));
+		var zIndex = Mathf.FloorToInt(uv.y * (sampleCount.y - 1));
+
+		// Ensure indices are within the bounds of the mesh
+		xIndex = Mathf.Clamp(xIndex, 0, sampleCount.x - 2);
+		zIndex = Mathf.Clamp(zIndex, 0, sampleCount.y - 2);
+
+		// Get the four vertices of the square
+		var v1 = meshData.vertices[zIndex * sampleCount.x + xIndex];
+		var v2 = meshData.vertices[zIndex * sampleCount.x + xIndex + 1];
+		var v3 = meshData.vertices[(zIndex + 1) * sampleCount.x + xIndex];
+		var v4 = meshData.vertices[(zIndex + 1) * sampleCount.x + xIndex + 1];
+
+		if (debug)
+		{
+			Debug.Log("debug");
+			Debug.Log("xIndex: " + xIndex);
+			Debug.Log("zIndex: " + zIndex);
+			Debug.Log("uv: " + uv);
+			// Debug.DrawRay(worldPosition, Vector3.up * 10, Color.green, 10, false);
+			// Debug.DrawLine(transform.TransformPoint(v1), transform.TransformPoint(v2), Color.green, 10, false);
+			// Debug.DrawLine(transform.TransformPoint(v1), transform.TransformPoint(v3), Color.green, 10, false);
+			// Debug.DrawLine(transform.TransformPoint(v2), transform.TransformPoint(v4), Color.green, 10, false);
+			// Debug.DrawLine(transform.TransformPoint(v3), transform.TransformPoint(v4), Color.green, 10, false);
+		}
+
+		// Bilinear interpolation
+		float xRem = uv.x * (sampleCount.x - 1) / xSpacing;
+		float zRem = uv.y * (sampleCount.y - 1) / zSpacing;
+
+		float height1 = Mathf.Lerp(v1.y, v2.y, xRem);
+		float height2 = Mathf.Lerp(v3.y, v4.y, xRem);
+
+		return Mathf.Lerp(height1, height2, zRem);
+	}
+
+	public float GetMeshHeightUV(Vector2 uv)
 	{
 		var x = Mathf.RoundToInt(uv.x * heightMap.width);
 		var y = Mathf.RoundToInt(uv.y * heightMap.height);
-		return GetMeshHeight(x, y);
+		return GetMeshHeightPixel(x, y);
+
+		// var scaledUV = uv * (sampleCount - Vector2.one); // new Vector2(sampleCount.x - 1, sampleCount.y - 1);
+
+		// var floorX = Mathf.RoundToInt(Mathf.Floor(scaledUV.x) / (sampleCount.x - 1) * heightMap.width);
+		// var floorY = Mathf.RoundToInt(Mathf.Floor(scaledUV.y) / (sampleCount.y - 1) * heightMap.height);
+
+		// var ceilX = Mathf.RoundToInt(Mathf.Ceil(scaledUV.x) / (sampleCount.x - 1) * heightMap.width);
+		// var ceilY = Mathf.RoundToInt(Mathf.Ceil(scaledUV.y) / (sampleCount.y - 1) * heightMap.height);
+
+		// var lerpX = scaledUV.x - floorX;
+		// var lerpY = scaledUV.y - floorY;
+
+		// var bottomLeft = GetMeshHeight(floorX, floorY);
+		// var topLeft = GetMeshHeight(floorX, ceilY);
+		// var bottomRight = GetMeshHeight(ceilX, floorY);
+		// var topRight = GetMeshHeight(ceilX, ceilY);
+
+		// var floorHeight = Mathf.Lerp(bottomLeft, topLeft, lerpY);
+		// var ceilHeight = Mathf.Lerp(bottomRight, topRight, lerpY);
+
+		// return Mathf.Lerp(floorHeight, ceilHeight, lerpX);
+
+		// // var scaledUV = uv * new Vector2(heightMap.width, heightMap.height);
+
+		// // var floorX = (int)Mathf.Floor(scaledUV.x);
+		// // var floorY = (int)Mathf.Floor(scaledUV.y);
+
+		// // var ceilX = (int)Mathf.Ceil(scaledUV.x);
+		// // var ceilY = (int)Mathf.Ceil(scaledUV.y);
+
+		// // var lerpX = scaledUV.x - floorX;
+		// // var lerpY = scaledUV.y - floorY;
+
+		// // var bottomLeft = GetMeshHeight(floorX, floorY);
+		// // var topLeft = GetMeshHeight(floorX, ceilY);
+		// // var bottomRight = GetMeshHeight(ceilX, floorY);
+		// // var topRight = GetMeshHeight(ceilX, ceilY);
+
+		// // var floorHeight = Mathf.Lerp(bottomLeft, topLeft, lerpY);
+		// // var ceilHeight = Mathf.Lerp(bottomRight, topRight, lerpY);
+
+		// // return Mathf.Lerp(floorHeight, ceilHeight, lerpX);
+
+		// var roundedU = Mathf.Round(uv.x * (sampleCount.x - 1)) / (sampleCount.x - 1);
+		// var roundedV = Mathf.Round(uv.y * (sampleCount.y - 1)) / (sampleCount.y - 1);
+		// var x = Mathf.RoundToInt(roundedU * heightMap.width);
+		// var y = Mathf.RoundToInt(roundedV * heightMap.height);
+		// return GetMeshHeight(x, y);
+
+		// var x = Mathf.RoundToInt(uv.x * heightMap.width);
+		// var y = Mathf.RoundToInt(uv.y * heightMap.height);
+		// return GetMeshHeight(x, y);
 	}
 
-	public float GetMeshHeight(int x, int y)
+	public float GetMeshHeightPixel(int x, int y)
 	{
 		return heightMap.GetPixel(x, y).grayscale * size.y;
 	}
