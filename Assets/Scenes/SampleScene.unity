@@ -1674,6 +1674,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1056269036718642083, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4095360099563520640, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
       propertyPath: m_Name
       value: CameraPivot
@@ -1718,6 +1722,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6713198489125426360, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
+      propertyPath: orthographic
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7406818813415170370, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7406818813415170370, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
       propertyPath: _settings.pixel
       value: 0
@@ -1726,6 +1738,10 @@ PrefabInstance:
       propertyPath: _settings.outline
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7406818813415170370, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
+      propertyPath: replacementShader
+      value: 
+      objectReference: {fileID: 4800000, guid: a0f61318284ac40bfb54f5a80b01bdf7, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -73,7 +73,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 55
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -105,17 +105,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ae31a9a3a3e946d1a6a904b9ab115c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _settings:
-    pixel: 0
-    screenHeight: 192
-    outline: 0
-    outlineColor: {r: 0, g: 0, b: 0, a: 0.6}
-    edgeColor: {r: 1, g: 1, b: 1, a: 0.4}
-    depthThreshold: 0.02
-    normalThreshold: 0.05
-    normalEdgeBias: {x: 1, y: 1, z: 1}
-    angleThreshold: 0.5
-    angleFactorScale: 7
+  grassReplacementShader: {fileID: 4800000, guid: cbc7dda786c2d4ea1b999d34d37bd0e5, type: 3}
+  grassBlendingShader: {fileID: 4800000, guid: ca5c8e1ac59ce49209ce9d675628d119, type: 3}
+  pixelState: 0
+  screenHeight: 192
+  outlineState: 0
+  outlineColor: {r: 0, g: 0, b: 0, a: 0.6}
+  edgeColor: {r: 1, g: 1, b: 1, a: 0.4}
+  depthThreshold: 0.02
+  normalThreshold: 0.05
+  normalEdgeBias: {x: 1, y: 1, z: 1}
+  angleThreshold: 0.5
+  angleFactorScale: 7
 --- !u!1 &4095360099563520640
 GameObject:
   m_ObjectHideFlags: 0

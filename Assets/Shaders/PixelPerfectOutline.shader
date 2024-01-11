@@ -7,7 +7,7 @@ Shader "Custom/PixelPerfectOutline"
     SubShader
     {
         Tags { "RenderType"="Opaque" }
-        LOD 100
+        Cull Off ZWrite Off ZTest Always
 
         Pass
         {

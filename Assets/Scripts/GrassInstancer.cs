@@ -30,10 +30,6 @@ public class GrassInstancer : MonoBehaviour
         _meshGenerator.GenerateTerrainMesh();
         Random.InitState(_seed);
 
-        Matrix4x4 P = Camera.main.projectionMatrix;
-        Matrix4x4 V = Camera.main.transform.worldToLocalMatrix;
-        Matrix4x4 VP = P * V;
-
         matrices = new Matrix4x4[_density * _density];
 
         var index = 0;
@@ -70,7 +66,10 @@ public class GrassInstancer : MonoBehaviour
             }
         }
 
-        var rp = new RenderParams(_material);
+        var rp = new RenderParams(_material)
+        {
+            layer = LayerMask.NameToLayer("Grass")
+        };
         Graphics.RenderMeshInstanced(rp, _mesh, 0, matrices);
 
         // matrices = new Matrix4x4[_meshGenerator.sampleCount.x * _meshGenerator.sampleCount.y];
