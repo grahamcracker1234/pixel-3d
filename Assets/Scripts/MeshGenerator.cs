@@ -49,11 +49,8 @@ public class MeshGenerator : MonoBehaviour
 		return meshData;
 	}
 
-	public float GetMeshHeightWorld(Vector3 worldPosition, Vector2 uv, bool debug = false)
+	public float GetMeshHeightWorld(Vector2 uv, bool debug = false)
 	{
-		// var localPoint = transform.InverseTransformPoint(worldPosition);
-		// var uv = new Vector3(localPoint.x - mesh.bounds.min.x, 0, localPoint.z - mesh.bounds.min.z) / size.z;
-
 		// Calculate the precise indices
 		float xIndexPrecise = uv.x * (sampleCount.x - 1);
 		float zIndexPrecise = uv.y * (sampleCount.y - 1);
@@ -98,18 +95,35 @@ public class MeshGenerator : MonoBehaviour
 		float height1 = Mathf.Lerp(v1.y, v2.y, xRem);
 		float height2 = Mathf.Lerp(v3.y, v4.y, xRem);
 		return Mathf.Lerp(height1, height2, zRem);
-
-		// float diag1 = Mathf.Lerp(v1.y, v4.y, Mathf.Sqrt(xRem * xRem + zRem * zRem));
-		// float diag2 = Mathf.Lerp(v2.y, v3.y, Mathf.Sqrt((1 - xRem) * (1 - xRem) + zRem * zRem));
-		// return Mathf.Lerp(diag1, diag2, xRem);
-
-		// float height1 = Mathf.Lerp(v1.y, v3.y, zRem);
-		// float height2 = Mathf.Lerp(v2.y, v4.y, zRem);
-		// return Mathf.Lerp(height1, height2, xRem);
-
-
-
 	}
+
+	private Vector3 CalculateBarycentricCoordinates(Vector2 uv, Vector3 v1, Vector3 v2, Vector3 v3)
+	{
+		Vector3 p = new Vector3(uv.x, uv.y, 0);
+
+		Vector3 a = new Vector3(v1.x, v1.z, 0); // Convert to 2D
+		Vector3 b = new Vector3(v2.x, v2.z, 0); // Convert to 2D
+		Vector3 c = new Vector3(v3.x, v3.z, 0); // Convert to 2D
+
+		// Compute vectors from point p to vertices
+		Vector3 vectorPA = a - p;
+		Vector3 vectorPB = b - p;
+		Vector3 vectorPC = c - p;
+
+		// Compute the areas of the sub-triangles and the full triangle
+		float areaTriangleABC = Vector3.Cross(a - b, a - c).magnitude;
+		float areaPBC = Vector3.Cross(b - c, vectorPB).magnitude;
+		float areaPCA = Vector3.Cross(c - a, vectorPC).magnitude;
+		float areaPAB = Vector3.Cross(a - b, vectorPA).magnitude;
+
+		// Calculate the barycentric coordinates
+		float lambda1 = areaPBC / areaTriangleABC;
+		float lambda2 = areaPCA / areaTriangleABC;
+		float lambda3 = areaPAB / areaTriangleABC;
+
+		return new Vector3(lambda1, lambda2, lambda3);
+	}
+
 
 	public float GetMeshHeightUV(Vector2 uv)
 	{

@@ -8,8 +8,8 @@ public class GrassInstancer : MonoBehaviour
     [SerializeField] int _density = 10;
     [SerializeField] Mesh _mesh;
     [SerializeField] Material _material;
-    public Material material;
     [SerializeField] int _seed = 42;
+    // public Material material;
 
     MeshGenerator _meshGenerator;
 
@@ -49,22 +49,22 @@ public class GrassInstancer : MonoBehaviour
                 // var position = new Vector3(x - centeringOffset + offset.x, 0, y - centeringOffset + offset.y);// * scale + transform.position + new Vector3(offset.x, 0, offset.y);
                 // var uv = position / _density;
                 // position = position * scale + transform.position;
-                var offset = Vector2.zero; //Random.insideUnitCircle;
+                var offset = Random.insideUnitCircle;
                 var position = new Vector3(x - centeringOffset, 0, y - centeringOffset) * scale + transform.position + new Vector3(offset.x, 0, offset.y) * scale;
                 var uv = (new Vector2(x + 0.5f, y + 0.5f) + offset) / _density;
 
                 // var sampleCount = _meshGenerator.sampleCount - Vector2.one;
                 // var roundedUV = new Vector2(Mathf.Round(uv.x * sampleCount.x), Mathf.Round(uv.y * sampleCount.y)) / sampleCount;
                 //Debug.Log(uv - roundedUV);
-                var instancedMeshHeight = _mesh.bounds.size.y / 2 * 0.1f;
-                // position.y += instancedMeshHeight;
-                position.y += _meshGenerator.GetMeshHeightWorld(position, uv, x == 3 && y == 5);
+                var instancedMeshHeight = _mesh.bounds.size.y / 2;
+                position.y += instancedMeshHeight;
+                position.y += _meshGenerator.GetMeshHeightWorld(uv);
 
                 var target = Camera.main.transform.position;
                 var rotation = Quaternion.LookRotation(position - target, Vector3.up);
 
-                // matrices[index] = Matrix4x4.TRS(position, rotation, Vector3.one);
-                matrices[index] = Matrix4x4.TRS(position, Quaternion.identity, Vector3.one * 0.1f);
+                matrices[index] = Matrix4x4.TRS(position, rotation, Vector3.one);
+                // matrices[index] = Matrix4x4.TRS(position, Quaternion.identity, Vector3.one);
 
                 index++;
             }
@@ -73,18 +73,17 @@ public class GrassInstancer : MonoBehaviour
         var rp = new RenderParams(_material);
         Graphics.RenderMeshInstanced(rp, _mesh, 0, matrices);
 
+        // matrices = new Matrix4x4[_meshGenerator.sampleCount.x * _meshGenerator.sampleCount.y];
 
-        matrices = new Matrix4x4[_meshGenerator.sampleCount.x * _meshGenerator.sampleCount.y];
+        // var index2 = 0;
+        // foreach (var vertex in _meshGenerator.meshData.vertices)
+        // {
+        //     matrices[index2] = Matrix4x4.TRS(vertex, Quaternion.identity, Vector3.one * 0.1f);
+        //     index2++;
+        // }
 
-        var index2 = 0;
-        foreach (var vertex in _meshGenerator.meshData.vertices)
-        {
-            matrices[index2] = Matrix4x4.TRS(vertex, Quaternion.identity, Vector3.one * 0.1f);
-            index2++;
-        }
-
-        Mesh mesh = Resources.GetBuiltinResource<Mesh>("Sphere.fbx");
-        var rp2 = new RenderParams(material);
-        Graphics.RenderMeshInstanced(rp2, mesh, 0, matrices);
+        // Mesh mesh = Resources.GetBuiltinResource<Mesh>("Sphere.fbx");
+        // var rp2 = new RenderParams(material);
+        // Graphics.RenderMeshInstanced(rp2, mesh, 0, matrices);
     }
 }
