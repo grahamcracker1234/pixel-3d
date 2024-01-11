@@ -51,13 +51,14 @@ public class GrassInstancer : MonoBehaviour
                 // position = position * scale + transform.position;
                 var offset = Vector2.zero; //Random.insideUnitCircle;
                 var position = new Vector3(x - centeringOffset, 0, y - centeringOffset) * scale + transform.position + new Vector3(offset.x, 0, offset.y) * scale;
-                var uv = (new Vector2(x, y) + offset) / _density;
+                var uv = (new Vector2(x + 0.5f, y + 0.5f) + offset) / _density;
 
                 // var sampleCount = _meshGenerator.sampleCount - Vector2.one;
                 // var roundedUV = new Vector2(Mathf.Round(uv.x * sampleCount.x), Mathf.Round(uv.y * sampleCount.y)) / sampleCount;
                 //Debug.Log(uv - roundedUV);
                 var instancedMeshHeight = _mesh.bounds.size.y / 2 * 0.1f;
-                position.y += instancedMeshHeight + _meshGenerator.GetMeshHeightWorld(position, uv, x == 3 && y == 5);
+                // position.y += instancedMeshHeight;
+                position.y += _meshGenerator.GetMeshHeightWorld(position, uv, x == 3 && y == 5);
 
                 var target = Camera.main.transform.position;
                 var rotation = Quaternion.LookRotation(position - target, Vector3.up);

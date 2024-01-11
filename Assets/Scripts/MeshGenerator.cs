@@ -54,9 +54,9 @@ public class MeshGenerator : MonoBehaviour
 		// var localPoint = transform.InverseTransformPoint(worldPosition);
 		// var uv = new Vector3(localPoint.x - mesh.bounds.min.x, 0, localPoint.z - mesh.bounds.min.z) / size.z;
 
-		// Calculate spacing based on the mesh size and number of vertices
-		var xSpacing = size.x / (sampleCount.x - 1);
-		var zSpacing = size.z / (sampleCount.y - 1);
+		// Calculate the precise indices
+		float xIndexPrecise = uv.x * (sampleCount.x - 1);
+		float zIndexPrecise = uv.y * (sampleCount.y - 1);
 
 		// Calculate the indices of the vertices around the point
 		var xIndex = Mathf.FloorToInt(uv.x * (sampleCount.x - 1));
@@ -78,21 +78,37 @@ public class MeshGenerator : MonoBehaviour
 			Debug.Log("xIndex: " + xIndex);
 			Debug.Log("zIndex: " + zIndex);
 			Debug.Log("uv: " + uv);
-			// Debug.DrawRay(worldPosition, Vector3.up * 10, Color.green, 10, false);
-			// Debug.DrawLine(transform.TransformPoint(v1), transform.TransformPoint(v2), Color.green, 10, false);
-			// Debug.DrawLine(transform.TransformPoint(v1), transform.TransformPoint(v3), Color.green, 10, false);
-			// Debug.DrawLine(transform.TransformPoint(v2), transform.TransformPoint(v4), Color.green, 10, false);
-			// Debug.DrawLine(transform.TransformPoint(v3), transform.TransformPoint(v4), Color.green, 10, false);
+
+			// Debug.DrawRay(worldPosition, Vector3.up * 10, Color.blue, 1, false);
+
+			var calculatedPosFromUV = new Vector3(uv.x * size.x + mesh.bounds.min.x, 0, uv.y * size.z + mesh.bounds.min.z);
+			Debug.DrawRay(transform.TransformPoint(calculatedPosFromUV), Vector3.up * 10, Color.blue, 1, false);
+			Debug.DrawRay(transform.TransformPoint(v1), Vector3.up * 10, Color.blue, 1, false);
+			Debug.DrawRay(transform.TransformPoint(v4), Vector3.up * 10, Color.blue, 1, false);
+			Debug.DrawLine(transform.TransformPoint(v1), transform.TransformPoint(v2), Color.green, 1, false);
+			Debug.DrawLine(transform.TransformPoint(v1), transform.TransformPoint(v3), Color.green, 1, false);
+			Debug.DrawLine(transform.TransformPoint(v2), transform.TransformPoint(v4), Color.green, 1, false);
+			Debug.DrawLine(transform.TransformPoint(v3), transform.TransformPoint(v4), Color.green, 1, false);
 		}
 
 		// Bilinear interpolation
-		float xRem = uv.x * (sampleCount.x - 1) / xSpacing;
-		float zRem = uv.y * (sampleCount.y - 1) / zSpacing;
+		float xRem = xIndexPrecise - xIndex;
+		float zRem = zIndexPrecise - zIndex;
 
 		float height1 = Mathf.Lerp(v1.y, v2.y, xRem);
 		float height2 = Mathf.Lerp(v3.y, v4.y, xRem);
-
 		return Mathf.Lerp(height1, height2, zRem);
+
+		// float diag1 = Mathf.Lerp(v1.y, v4.y, Mathf.Sqrt(xRem * xRem + zRem * zRem));
+		// float diag2 = Mathf.Lerp(v2.y, v3.y, Mathf.Sqrt((1 - xRem) * (1 - xRem) + zRem * zRem));
+		// return Mathf.Lerp(diag1, diag2, xRem);
+
+		// float height1 = Mathf.Lerp(v1.y, v3.y, zRem);
+		// float height2 = Mathf.Lerp(v2.y, v4.y, zRem);
+		// return Mathf.Lerp(height1, height2, xRem);
+
+
+
 	}
 
 	public float GetMeshHeightUV(Vector2 uv)
