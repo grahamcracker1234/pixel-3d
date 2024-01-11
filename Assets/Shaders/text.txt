@@ -1,0 +1,1 @@
+https://forum.unity.com/threads/how-to-extract-view-depth-from-a-camera-render-with-a-shader.1506944

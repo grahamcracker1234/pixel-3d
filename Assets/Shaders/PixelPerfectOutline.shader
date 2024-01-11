@@ -34,6 +34,7 @@ Shader "Custom/PixelPerfectOutline"
             sampler2D _MainTex;
             float4 _MainTex_ST;
             sampler2D _CameraDepthNormalsTexture;
+            sampler2D _CameraDepthTexture;
 
             float2 _ScreenSize;
 
@@ -50,10 +51,22 @@ Shader "Custom/PixelPerfectOutline"
             float4 _EdgeColor;
             float _ColorShift;
 
+            // #define SAMPLE_DEPTH_NORMAL(uv, name) \
+            //     float _##name##Depth; \
+            //     float3 name##Normal; \
+            //     DecodeDepthNormal(tex2D(_CameraDepthNormalsTexture, uv), _##name##Depth, name##Normal); \
+            //     float name##Depth = tex2D(_CameraDepthTexture, uv).r;
+
             #define SAMPLE_DEPTH_NORMAL(uv, name) \
                 float name##Depth; \
                 float3 name##Normal; \
                 DecodeDepthNormal(tex2D(_CameraDepthNormalsTexture, uv), name##Depth, name##Normal);
+            
+            // #define SAMPLE_DEPTH_NORMAL(uv, name) \
+            //     float2 name##roundedUV = floor(uv * _ScreenSize) / _ScreenSize; \
+            //     float name##Depth; \
+            //     float3 name##Normal; \
+            //     DecodeDepthNormal(tex2D(_CameraDepthNormalsTexture, name##roundedUV), name##Depth, name##Normal); \
 
             struct PassValue
             {
@@ -129,9 +142,7 @@ Shader "Custom/PixelPerfectOutline"
 
             v2f vert(appdata v)
             {
-                v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+                v2f o = { UnityObjectToClipPos(v.vertex), TRANSFORM_TEX(v.uv, _MainTex) };
                 return o;
             }
 

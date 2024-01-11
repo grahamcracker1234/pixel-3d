@@ -49,7 +49,7 @@ public class GrassInstancer : MonoBehaviour
                 // var position = new Vector3(x - centeringOffset + offset.x, 0, y - centeringOffset + offset.y);// * scale + transform.position + new Vector3(offset.x, 0, offset.y);
                 // var uv = position / _density;
                 // position = position * scale + transform.position;
-                var offset = Random.insideUnitCircle;
+                var offset = Random.insideUnitCircle / 2;
                 var position = new Vector3(x - centeringOffset, 0, y - centeringOffset) * scale + transform.position + new Vector3(offset.x, 0, offset.y) * scale;
                 var uv = (new Vector2(x + 0.5f, y + 0.5f) + offset) / _density;
 
