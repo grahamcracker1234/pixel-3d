@@ -106,11 +106,6 @@ public class MeshGenerator : MonoBehaviour
 	{
 		return mesh != null && meshData != null;
 	}
-
-	public Vector3 GetBoundingSize()
-	{
-		return mesh.bounds.size;
-	}
 }
 
 // MeshData class which allows for easy mesh creation
@@ -157,9 +152,9 @@ public class MeshGeneratorEditor : Editor
 {
 	public override void OnInspectorGUI()
 	{
-		DrawDefaultInspector();
-
 		var script = (MeshGenerator)target;
+		DrawDefaultInspector();
+		GUILayout.Space(10);
 		if (GUILayout.Button("Generate Terrain"))
 			script.GenerateTerrainMesh();
 	}
