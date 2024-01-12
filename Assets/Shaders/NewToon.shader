@@ -12,6 +12,7 @@ Shader "Custom/NewToon"
     {
         Tags
         {
+            "RenderType" = "Opaque"
             "LightMode" = "ForwardBase"
         }
         
@@ -20,9 +21,11 @@ Shader "Custom/NewToon"
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
+            #pragma multi_compile_fwdbase
             #include "UnityCG.cginc"
             #include "UnityLightingCommon.cginc"
             #include "Lighting.cginc"
+            #include "AutoLight.cginc"
 
             struct appdata
             {
@@ -33,10 +36,11 @@ Shader "Custom/NewToon"
 
             struct v2f
             {
-                float4 vertex : SV_POSITION;
+                float4 pos : SV_POSITION;
                 float3 worldPos : TEXCOORD1;
                 float2 uv : TEXCOORD0;
                 float3 normal : NORMAL;
+                SHADOW_COORDS(2)
             };
 
             sampler2D _MainTex;
@@ -56,6 +60,16 @@ Shader "Custom/NewToon"
                 return dot(color, float3(0.299, 0.587, 0.114));
             }
 
+            // float3 toonShading(v2f i, float attenuation, float4 color, float4 lightColor, float3 lightDir)
+            // {
+            //     float3 diffuseReflection = step(_AttenuationThreshold, attenuation) * color.rgb * lightColor.rgb * max(0, dot(i.normal, lightDir));
+            //     float3 maxGrayscale = grayscale(_Color.rgb);
+            //     float3 grayscaleColor = remap(grayscale(diffuseReflection), 0, maxGrayscale, 0, 1);
+            //     float3 quantizedColor = floor(grayscaleColor * _ShadeBitDepth) / _ShadeBitDepth;
+            //     float3 brightenedColor = remap(quantizedColor, 0, 1, _MaxDarkness, 1);
+            //     return brightenedColor * color.rgb;
+            // }
+
             float3 toonShading(v2f i, float attenuation, float4 color, float4 lightColor, float3 lightDir)
             {
                 float3 diffuseReflection = step(_AttenuationThreshold, attenuation) * color.rgb * lightColor.rgb * max(0, dot(i.normal, lightDir));
@@ -63,7 +77,7 @@ Shader "Custom/NewToon"
                 float3 grayscaleColor = remap(grayscale(diffuseReflection), 0, maxGrayscale, 0, 1);
                 float3 quantizedColor = floor(grayscaleColor * _ShadeBitDepth) / _ShadeBitDepth;
                 float3 brightenedColor = remap(quantizedColor, 0, 1, _MaxDarkness, 1);
-                return brightenedColor * color.rgb;
+                return brightenedColor * color.rgb * lightColor.rgb;
             }
 
             float3 toonShadingDirectional(v2f i, float4 color, float4 lightDir, float4 lightColor)
@@ -83,10 +97,11 @@ Shader "Custom/NewToon"
             v2f vert (appdata v)
             {
                 v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
+                o.pos = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 o.normal = v.normal;
                 o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
+                TRANSFER_SHADOW(o)
                 return o;
             }
 
@@ -94,7 +109,8 @@ Shader "Custom/NewToon"
             fixed4 frag (v2f i) : SV_Target
             {
                 fixed4 sample = tex2D(_MainTex, i.uv);
-                float4 color = sample * _Color;
+                float shadow = remap(SHADOW_ATTENUATION(i), 0, 1, 0.5, 1);
+                float4 color = sample * _Color * shadow;
 
                 // Light positions and attenuations
                 float4 lightPos[4] = {
@@ -106,11 +122,12 @@ Shader "Custom/NewToon"
 
                 // In ForwardBase pass, _WorldSpaceLightPos0 is always directional light
                 float3 diffuseReflection = toonShadingDirectional(i, color, _WorldSpaceLightPos0, _LightColor0);
-                for (int j = 0; j < 4; j++)
-                    diffuseReflection = max(diffuseReflection, toonShadingPoint(i, color, lightPos[j], unity_LightColor[j]));
+                // for (int j = 0; j < 4; j++)
+                    // diffuseReflection = max(diffuseReflection, toonShadingPoint(i, color, lightPos[j], unity_LightColor[j]));
                 return float4(diffuseReflection, 1);
             }
             ENDCG
         }
+        UsePass "Legacy Shaders/VertexLit/SHADOWCASTER"
     }
 }
