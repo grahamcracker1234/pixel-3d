@@ -97,6 +97,18 @@ public class PostProcesser : MonoBehaviour
 
             screenSize = new Vector2(pixelScreenWidth, pixelScreenHeight);
         }
+        else
+        {
+            src.filterMode = FilterMode.Bilinear;
+            tempTex.filterMode = FilterMode.Bilinear;
+            grassTex.filterMode = FilterMode.Bilinear;
+
+            tempTex.Release();
+            tempTex.Create();
+
+            grassTex.Release();
+            grassTex.Create();
+        }
 
         outlineMaterial.SetVector("_ScreenSize", screenSize);
 
@@ -122,6 +134,11 @@ public class PostProcesser : MonoBehaviour
                 Graphics.Blit(tempTex, dest, grassBlendingMaterial);
             else
                 Graphics.Blit(tempTex, dest);
+        }
+        else if (grassState == ShaderState.On)
+        {
+            Graphics.Blit(src, tempTex, grassBlendingMaterial);
+            Graphics.Blit(tempTex, dest);
         }
         else
         {

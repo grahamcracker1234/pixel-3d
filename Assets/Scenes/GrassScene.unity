@@ -183,7 +183,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: ae2f01859a4864a4a945714fb2f1ca94, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -280,6 +280,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7406818813415170370, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
+      propertyPath: pixelState
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -297,7 +301,7 @@ GameObject:
   - component: {fileID: 349912606}
   - component: {fileID: 349912605}
   m_Layer: 0
-  m_Name: Terrain
+  m_Name: Terrain (Component)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -787,7 +791,7 @@ GameObject:
   - component: {fileID: 1676540332}
   - component: {fileID: 1676540333}
   m_Layer: 0
-  m_Name: Plane
+  m_Name: Terrain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -835,7 +839,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 3ed6fd6e3b810489d8d0768b1882c37f, type: 2}
+  - {fileID: 2100000, guid: 3b084ffc3935e43f09c0a44cc85e354e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -896,6 +900,9 @@ MonoBehaviour:
   _mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   _material: {fileID: 2100000, guid: 6ddce44f4f36c4cf08fffc923d8c1955, type: 2}
   _seed: 42
+  _grassLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!114 &1676540333
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -965,6 +972,9 @@ MonoBehaviour:
   _mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   _material: {fileID: 2100000, guid: d150162e9657f49cf8a8dfb5d6b69ba0, type: 2}
   _seed: 42
+  _grassLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!64 &1851432427
 MeshCollider:
   m_ObjectHideFlags: 0
