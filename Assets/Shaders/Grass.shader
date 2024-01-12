@@ -70,8 +70,8 @@ Shader "Custom/Grass"
                 if (tex.a < alphaCutout)
                     discard;
                 
-                color.rgb *= lum;
-                return color;
+                // color.rgb *= lum;
+                return float4(color.rgb * lum, color.a);
             }
             ENDCG
         }

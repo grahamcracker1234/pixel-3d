@@ -30,6 +30,7 @@ Shader "Custom/GrassBlending"
             sampler2D _MainTex;
             float4 _MainTex_ST;
             sampler2D _GrassTex;
+            float _AlphaThreshold;
 
             v2f vert (appdata v)
             {
@@ -44,7 +45,8 @@ Shader "Custom/GrassBlending"
                 fixed4 color = tex2D(_MainTex, i.uv);
                 fixed4 grassColor = tex2D(_GrassTex, i.uv);
 
-                color.rgb = lerp(color.rgb, grassColor.rgb, grassColor.a);
+                if (grassColor.a > _AlphaThreshold)
+                    color.rgb = lerp(color.rgb, grassColor.rgb, grassColor.a);
 
                 return color;
             }

@@ -5,8 +5,10 @@ using UnityEngine.Rendering;
 public class PostProcesser : MonoBehaviour
 {
     [Header("Grass Overlaying Shaders")]
+    public ShaderState grassState = ShaderState.On;
     public Shader grassReplacementShader;
     public Shader grassBlendingShader;
+    public float alphaThreshold = 0.5f;
 
     [Header("Pixel Shader")]
     public ShaderState pixelState = ShaderState.On;
@@ -67,6 +69,9 @@ public class PostProcesser : MonoBehaviour
         outlineMaterial.SetColor("_OutlineColor", outlineColor);
         outlineMaterial.SetColor("_EdgeColor", edgeColor);
 
+        var grassBlendingMaterial = CoreUtils.CreateEngineMaterial("Custom/GrassBlending");
+        grassBlendingMaterial.SetFloat("_AlphaThreshold", alphaThreshold);
+
         var pixelScreenHeight = screenHeight;
         var pixelScreenWidth = (int)(pixelScreenHeight * Camera.main.aspect + 0.5f);
 
@@ -95,24 +100,28 @@ public class PostProcesser : MonoBehaviour
 
         outlineMaterial.SetVector("_ScreenSize", screenSize);
 
-        var grassCameraObject = new GameObject("GrassCamera");
-        grassCameraObject.transform.SetParent(Camera.main.transform);
-        var grassCamera = grassCameraObject.AddComponent<Camera>();
-        grassCamera.CopyFrom(Camera.main);
-        grassCamera.targetTexture = grassTex;
-        grassCamera.cullingMask = -1;
-        grassCamera.clearFlags = CameraClearFlags.Nothing;
-        grassCamera.RenderWithShader(grassReplacementShader, "RenderType");
-        Destroy(grassCameraObject);
+        if (grassState == ShaderState.On)
+        {
+            var grassCameraObject = new GameObject("GrassCamera");
+            grassCameraObject.transform.SetParent(Camera.main.transform);
+            var grassCamera = grassCameraObject.AddComponent<Camera>();
+            grassCamera.CopyFrom(Camera.main);
+            grassCamera.targetTexture = grassTex;
+            grassCamera.cullingMask = -1;
+            grassCamera.clearFlags = CameraClearFlags.Nothing;
+            grassCamera.RenderWithShader(grassReplacementShader, "RenderType");
+            Destroy(grassCameraObject);
 
-        var grassBlendingMaterial = CoreUtils.CreateEngineMaterial("Custom/GrassBlending");
-        grassBlendingMaterial.SetTexture("_GrassTex", grassTex);
+            grassBlendingMaterial.SetTexture("_GrassTex", grassTex);
+        }
 
         if (outlineState != ShaderState.Off)
         {
             Graphics.Blit(src, tempTex, outlineMaterial);
-            Graphics.Blit(tempTex, dest, grassBlendingMaterial);
-            // Graphics.Blit(tempTex, dest);
+            if (grassState == ShaderState.On)
+                Graphics.Blit(tempTex, dest, grassBlendingMaterial);
+            else
+                Graphics.Blit(tempTex, dest);
         }
         else
         {
