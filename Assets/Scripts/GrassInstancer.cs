@@ -38,7 +38,6 @@ public class GrassInstancer : MonoBehaviour
         };
     }
 
-
     void GenerateMatrices()
     {
         // Set the seed
@@ -96,7 +95,7 @@ public class GrassInstancer : MonoBehaviour
         if (_matrices == null || _matrices.Length == 0)
             GenerateMatrices();
 
-        GenerateMatrices();
+        GenerateMatrices(); // TODO: Remove this (add rotation angle to shader)
 
         // Render the grass
         Graphics.RenderMeshInstanced(_renderParams, _grassMesh, 0, _matrices);

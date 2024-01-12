@@ -143,7 +143,6 @@ public class MeshData
 		mesh.RecalculateNormals();
 		return mesh;
 	}
-
 }
 
 // Custom editor which adds a button to generate the terrain
