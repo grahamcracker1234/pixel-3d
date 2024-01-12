@@ -47,6 +47,10 @@ public class GrassInstancer : MonoBehaviour
         // Initialize the matrices
         _matrices = new Matrix4x4[_density * _density];
 
+        // Calculate the rotation
+        var target = Camera.main.transform.position;
+        var rotation = Quaternion.LookRotation(transform.position - target, Vector3.up);
+
         // Loop through each grass
         var index = 0;
         for (int y = 0; y < _density; y++)
@@ -59,10 +63,6 @@ public class GrassInstancer : MonoBehaviour
                 var position2D = (uv - Vector2.one / 2) * new Vector2(_meshGenerator.size.x, _meshGenerator.size.z);
                 var height = _grassMesh.bounds.size.y / 2 + _meshGenerator.GetMeshHeight(uv);
                 var position = transform.TransformPoint(new Vector3(position2D.x, height, position2D.y));
-
-                // Calculate the rotation
-                var target = Camera.main.transform.position;
-                var rotation = Quaternion.LookRotation(position - target, Vector3.up);
 
                 // Set the matrix
                 _matrices[index] = Matrix4x4.TRS(position, rotation, Vector3.one);
@@ -91,7 +91,7 @@ public class GrassInstancer : MonoBehaviour
         if (_matrices == null || _matrices.Length != _density * _density)
             GenerateMatrices();
 
-        GenerateMatrices(); // TODO: Remove this line, needed because billboarding does not work
+        GenerateMatrices();
 
         // Render the grass
         Graphics.RenderMeshInstanced(_renderParams, _grassMesh, 0, _matrices);
