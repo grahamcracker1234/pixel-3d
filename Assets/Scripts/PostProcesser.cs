@@ -55,8 +55,8 @@ public class PostProcesser : MonoBehaviour
     void Setup()
     {
         Camera.main.depthTextureMode = DepthTextureMode.DepthNormals;
-
-        Camera.main.cullingMask = ~(1 << (int)Mathf.Log(grassLayer.value, 2));
+        if (grassState != ShaderState.Debug)
+            Camera.main.cullingMask = ~(1 << (int)Mathf.Log(grassLayer.value, 2));
     }
 
     // [ImageEffectOpaque]

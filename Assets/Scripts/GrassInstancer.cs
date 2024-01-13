@@ -18,7 +18,7 @@ public class GrassInstancer : MonoBehaviour
     GrassData[] grassData;
     GraphicsBuffer commandBuffer;
     GraphicsBuffer.IndirectDrawIndexedArgs[] commandData;
-    const int commandCount = 2;
+    const int commandCount = 1;
 
     ComputeBuffer grassBuffer;
 
@@ -101,8 +101,8 @@ public class GrassInstancer : MonoBehaviour
             baseVertexIndex = _grassMesh.GetBaseVertex(0),
             startInstance = 0,
         };
-        commandData[0] = indirectDrawIndexedArgs;
-        commandData[1] = indirectDrawIndexedArgs;
+        for (int i = 0; i < commandCount; i++)
+            commandData[i] = indirectDrawIndexedArgs;
         commandBuffer.SetData(commandData);
         grassBuffer.SetData(grassData);
 
@@ -115,6 +115,8 @@ public class GrassInstancer : MonoBehaviour
             layer = (int)Mathf.Log(_grassLayer.value, 2),
             worldBounds = new Bounds(Vector3.zero, 10000 * Vector3.one),
             matProps = block,
+            receiveShadows = true,
+            shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On,
         };
     }
 

@@ -1155,7 +1155,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _grassLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   _grassMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   _material: {fileID: 2100000, guid: 6ddce44f4f36c4cf08fffc923d8c1955, type: 2}
   _density: 1.2

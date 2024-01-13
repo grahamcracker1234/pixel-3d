@@ -1,63 +1,16 @@
-// #pragma vertex vert
-// #pragma fragment frag
-// 
-// #include "UnityCG.cginc"
-// 
-// struct appdata
-// {
-//     float4 vertex : POSITION;
-//     float2 uv : TEXCOORD0;
-//     float4 screenPos : TEXCOORD1;
-// };
-// 
-// struct v2f
-// {
-//     float4 vertex : SV_POSITION;
-//     float2 uv : TEXCOORD0;
-//     float2 screenPos : TEXCOORD1;
-// };
-// 
-// sampler2D _MainTex;
-// float4 _MainTex_ST;
-// 
-// sampler2D _CameraDepthNormalsTexture;
-// 
-// v2f vert (appdata v)
-// {
-//     v2f o;
-//     o.vertex = UnityObjectToClipPos(v.vertex);
-//     o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-//     //o.screenPos = ComputeScreenPos(o.vertex);
-//     o.screenPos = v.screenPos;
-//     return o;
-// }
-
-#pragma vertex vert
-#pragma fragment frag
-
-#include "UnityCG.cginc"
-
-struct appdata
+float remap(float value, float low1, float high1, float low2, float high2)
 {
-    float4 vertex : POSITION;
-    float2 uv : TEXCOORD0;
-};
+    return low2 + (value - low1) * (high2 - low2) / (high1 - low1);
+}
 
-struct v2f
+// sRBG to luma
+// https://en.wikipedia.org/wiki/Luma_(video)
+float luminance(float3 color)
 {
-    float4 vertex : SV_POSITION;
-    float2 uv : TEXCOORD0;
-};
+    return dot(color, float3(0.299, 0.587, 0.114));
+}
 
-sampler2D _MainTex;
-float4 _MainTex_ST;
-
-sampler2D _CameraDepthNormalsTexture;
-
-v2f vert (appdata v)
+float luminance(float4 color)
 {
-    v2f o;
-    o.vertex = UnityObjectToClipPos(v.vertex);
-    o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-    return o;
+    return luminance(color.rgb);
 }
