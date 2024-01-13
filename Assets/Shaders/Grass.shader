@@ -3,11 +3,12 @@ Shader "Custom/Grass"
     Properties
     {
         _MainTex("Texture", 2D) = "white" {}
-        _Color("Color", Color) = (0, 1, 0, 1)
         _AlphaCutout("Alpha Cutout", Range(0, 1)) = 0.5
+        _ColorTex("Color Texture", 2D) = "white" {}
+        _TipColor("Tip Color", Color) = (0, 0, 0, 1)
+        _TipColorShift("Tip Color Shift", Range(0, 1)) = 0.2
         _WindSpeed("Wind Speed", Range(0, 1)) = 0.5
         _WindStrength("Wind Strength", Range(0, 1)) = 0.5
-        _ColorTex("Color Texture", 2D) = "white" {}
     }
 
      SubShader
@@ -59,12 +60,13 @@ Shader "Custom/Grass"
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
-            float4 _Color;
+            sampler2D _ColorTex;
             float _AlphaCutout;
+            float4 _TipColor;
+            float _TipColorShift;
             float _WindSpeed;
             float _WindStrength;
             StructuredBuffer<GrassData> _GrassData;
-            sampler2D _ColorTex;
 
             float remap(float value, float low1, float high1, float low2, float high2)
             {
@@ -99,10 +101,13 @@ Shader "Custom/Grass"
                     discard;
 
                 float shadow = remap(step(0.75, SHADOW_ATTENUATION(i)), 0, 1, 0.5, 1);
-                float4 colorTex = tex2D(_ColorTex, i.colorTexUV);
-                float lum = dot(tex.xyz, float3(0.2126729, 0.7151522, 0.0721750));
-                float3 color = lerp(colorTex.rgb, lum * _Color, i.uv.y * _Color.a);
-                return float4(color * shadow, 1);
+                float4 color = tex2D(_ColorTex, i.colorTexUV) * tex;
+                float lum = dot(color.rgb, float3(0.2126729, 0.7151522, 0.0721750));
+                float lumTip = dot(_TipColor.rgb, float3(0.2126729, 0.7151522, 0.0721750));
+                // float3 color = lerp(colorTex.rgb, lum * _Color, i.uv.y * _Color.a);
+                // float3 color = colorTex.rgb * lerp(1, lum * _Color * (1 - _ColorShift), i.uv.y);
+                float4 tipColor = lerp(color, _TipColor, _TipColorShift);
+                return float4(lerp(color, tipColor, i.uv.y).rgb * shadow, 1);
             }
             ENDCG
         }

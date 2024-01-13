@@ -67,6 +67,7 @@ Material:
     m_Floats:
     - _AlphaCutout: 0.5
     - _BumpScale: 1
+    - _ColorShift: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
@@ -80,11 +81,13 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _TipColorShift: 0.1
     - _UVSec: 0
     - _WindSpeed: 0.35
     - _WindStrength: 0.25
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.43137255, g: 0.7058824, b: 0.5529412, a: 0.5019608}
+    - _Color: {r: 0, g: 0, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _TipColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []

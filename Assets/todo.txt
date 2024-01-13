@@ -1,0 +1,7 @@
+﻿Todo
+ - [ ] Add trees + leaf shader
+ - [ ] Add water shader
+ - [ ] Add cloud shader (potentially baked onto _ShadowMapTexture?)
+ - [ ] Add random weeds and flowers
+ - [ ] Add occlusion culling to grass
+ - [ ] Pixel perfect camera with zoom and pan
