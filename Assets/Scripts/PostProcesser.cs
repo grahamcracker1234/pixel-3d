@@ -5,6 +5,7 @@ using UnityEngine.Rendering;
 public class PostProcesser : MonoBehaviour
 {
     [Header("Grass Overlaying Shaders")]
+    public LayerMask grassLayer;
     public ShaderState grassState = ShaderState.On;
     public Shader grassReplacementShader;
     public Shader grassBlendingShader;
@@ -54,6 +55,8 @@ public class PostProcesser : MonoBehaviour
     void Setup()
     {
         Camera.main.depthTextureMode = DepthTextureMode.DepthNormals;
+
+        Camera.main.cullingMask = ~(1 << (int)Mathf.Log(grassLayer.value, 2));
     }
 
     // [ImageEffectOpaque]
