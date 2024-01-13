@@ -8,8 +8,29 @@ public class MeshGenerator : MonoBehaviour
 	public Texture2D heightMap;
 	public Vector3 size = new Vector3(10, 3, 10);
 	public Vector2Int sampleCount = new Vector2Int(25, 25);
+	public LayerMask terrainLayer;
 	[HideInInspector] public MeshData meshData;
 	[HideInInspector] public Mesh mesh;
+	[HideInInspector] public RenderTexture colorTexture;
+
+	void OnEnable()
+	{
+		var colorCameraObject = new GameObject("Color Camera");
+		colorCameraObject.transform.parent = transform;
+		colorCameraObject.transform.localPosition = Vector3.zero;
+		var offset = new Vector3(0, size.y, 0);
+		var rotation = Quaternion.Euler(90, 0, 0);
+		colorCameraObject.transform.SetLocalPositionAndRotation(offset, rotation);
+		var colorCamera = colorCameraObject.AddComponent<Camera>();
+		colorCamera.orthographic = true;
+		colorCamera.orthographicSize = size.z / 2;
+		colorCamera.aspect = size.x / size.z;
+		colorCamera.nearClipPlane = 0;
+		colorCamera.clearFlags = CameraClearFlags.Nothing;
+		colorCamera.cullingMask = 1 << (int)Mathf.Log(terrainLayer.value, 2);
+		colorTexture = new RenderTexture(1024, 1024, 0, RenderTextureFormat.ARGB32);
+		colorCamera.targetTexture = colorTexture;
+	}
 
 	public void GenerateTerrainMesh()
 	{
