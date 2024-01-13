@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using static System.Runtime.InteropServices.Marshal;
 
 [RequireComponent(typeof(MeshGenerator))]
 public class GrassInstancer : MonoBehaviour
@@ -12,9 +13,20 @@ public class GrassInstancer : MonoBehaviour
 
     MeshGenerator _meshGenerator;
     RenderParams _renderParams;
-    internal Vector2Int _sampleCount;
+    Vector2Int _sampleCount;
 
-    Matrix4x4[] _matrices;
+    GrassData[] grassData;
+    GraphicsBuffer commandBuffer;
+    GraphicsBuffer.IndirectDrawIndexedArgs[] commandData;
+    const int commandCount = 2;
+
+    ComputeBuffer grassBuffer;
+
+    struct GrassData
+    {
+        public Matrix4x4 matrixTRS;
+        public Vector2 worldUV;
+    }
 
     void Setup()
     {
@@ -31,14 +43,9 @@ public class GrassInstancer : MonoBehaviour
 
         if (_grassMesh == null)
             Debug.LogError("Grass mesh is null");
-
-        _renderParams = new RenderParams(_material)
-        {
-            layer = (int)Mathf.Log(_grassLayer.value, 2),
-        };
     }
 
-    void GenerateMatrices()
+    void Generate()
     {
         // Set the seed
         Random.InitState(_seed);
@@ -48,12 +55,17 @@ public class GrassInstancer : MonoBehaviour
         _sampleCount = new Vector2Int((int)(_density * size.x), (int)(_density * size.y));
 
         // Initialize the matrices
-        _matrices = new Matrix4x4[_sampleCount.x * _sampleCount.y];
+        grassData = new GrassData[GetSampleCount()];
+        grassBuffer?.Release();
+        // grassBuffer = new ComputeBuffer(GetSampleCount(), sizeof(float) * (4 * 4 + 2));
+        grassBuffer = new ComputeBuffer(GetSampleCount(), SizeOf(typeof(GrassData)));
+        commandBuffer?.Release();
+        commandBuffer = new GraphicsBuffer(GraphicsBuffer.Target.IndirectArguments, commandCount, GraphicsBuffer.IndirectDrawIndexedArgs.size);
+        commandData = new GraphicsBuffer.IndirectDrawIndexedArgs[commandCount];
 
         // Calculate the rotation
         var target = Camera.main.transform.position;
         var rotation = Quaternion.LookRotation(transform.position - target, Vector3.up);
-
 
         // Loop through each grass
         var index = 0;
@@ -63,18 +75,48 @@ public class GrassInstancer : MonoBehaviour
             {
                 // Calculate the position and uv with random offset
                 var randomOffset = Random.insideUnitCircle / 2;
+                var scale = 0.5f;
                 var uv = (new Vector2(x, y) + Vector2.one / 2 + randomOffset) / _sampleCount;
                 var position2D = (uv - Vector2.one / 2) * size;
-                var height = _grassMesh.bounds.size.y / 2 + _meshGenerator.GetMeshHeight(uv);
+                var height = _grassMesh.bounds.size.y / 2 * scale + _meshGenerator.GetMeshHeight(uv);
                 var position = transform.TransformPoint(new Vector3(position2D.x, height, position2D.y));
 
-                // Set the matrix
-                _matrices[index] = Matrix4x4.TRS(position, rotation, Vector3.one);
+                // Set the grass data
+                grassData[index] = new GrassData
+                {
+                    matrixTRS = Matrix4x4.TRS(position, rotation, Vector3.one * scale),
+                    worldUV = uv
+                };
 
                 // Increment the index
                 index++;
             }
         }
+
+        // Set the buffers
+        var indirectDrawIndexedArgs = new GraphicsBuffer.IndirectDrawIndexedArgs
+        {
+            indexCountPerInstance = _grassMesh.GetIndexCount(0),
+            instanceCount = (uint)GetSampleCount(),
+            startIndex = _grassMesh.GetIndexStart(0),
+            baseVertexIndex = _grassMesh.GetBaseVertex(0),
+            startInstance = 0,
+        };
+        commandData[0] = indirectDrawIndexedArgs;
+        commandData[1] = indirectDrawIndexedArgs;
+        commandBuffer.SetData(commandData);
+        grassBuffer.SetData(grassData);
+
+        // Set the render params
+        var block = new MaterialPropertyBlock();
+        block.SetTexture("_ColorTex", _meshGenerator.colorTexture);
+        block.SetBuffer("_GrassData", grassBuffer);
+        _renderParams = new RenderParams(_material)
+        {
+            layer = (int)Mathf.Log(_grassLayer.value, 2),
+            worldBounds = new Bounds(Vector3.zero, 10000 * Vector3.one),
+            matProps = block,
+        };
     }
 
     void Update()
@@ -92,13 +134,27 @@ public class GrassInstancer : MonoBehaviour
         if (transform.lossyScale != Vector3.one)
             Debug.LogWarning("GrassInstancer does not support scaling");
 
-        if (_matrices == null || _matrices.Length == 0)
-            GenerateMatrices();
+        if (grassData == null || grassData.Length == 0)
+            Generate();
 
-        GenerateMatrices(); // TODO: Remove this (add rotation angle to shader)
+        Generate(); // TODO: Remove this (add rotation angle to shader)
 
         // Render the grass
-        Graphics.RenderMeshInstanced(_renderParams, _grassMesh, 0, _matrices);
+        // https://docs.unity3d.com/ScriptReference/Graphics.RenderMeshIndirect.html
+        Graphics.RenderMeshIndirect(_renderParams, _grassMesh, commandBuffer, commandCount);
+    }
+
+    void OnDisable()
+    {
+        commandBuffer?.Release();
+        commandBuffer = null;
+        grassBuffer?.Release();
+        grassBuffer = null;
+    }
+
+    public int GetSampleCount()
+    {
+        return _sampleCount.x * _sampleCount.y;
     }
 }
 
@@ -111,6 +167,6 @@ public class GrassInstancerEditor : Editor
         var script = (GrassInstancer)target;
         DrawDefaultInspector();
         GUILayout.Space(10);
-        GUILayout.Label("Sample Count: " + script._sampleCount.x * script._sampleCount.y);
+        GUILayout.Label("Sample Count: " + script.GetSampleCount());
     }
 }
