@@ -65,7 +65,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0
   far clip plane: 50
   field of view: 60
   orthographic: 1
@@ -105,8 +105,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ae31a9a3a3e946d1a6a904b9ab115c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  grassState: 0
   grassReplacementShader: {fileID: 4800000, guid: cbc7dda786c2d4ea1b999d34d37bd0e5, type: 3}
   grassBlendingShader: {fileID: 4800000, guid: ca5c8e1ac59ce49209ce9d675628d119, type: 3}
+  alphaThreshold: 0.5
   pixelState: 0
   screenHeight: 192
   outlineState: 0
