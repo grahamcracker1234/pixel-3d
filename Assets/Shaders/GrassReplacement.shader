@@ -32,6 +32,7 @@ Shader "Custom/GrassReplacement"
             }
             ENDCG
         }
+        UsePass "Legacy Shaders/VertexLit/SHADOWCASTER"
     }
     SubShader
     {

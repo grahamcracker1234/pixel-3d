@@ -27,6 +27,7 @@ public class MeshGenerator : MonoBehaviour
 		colorCamera.aspect = size.x / size.z;
 		colorCamera.nearClipPlane = 0;
 		colorCamera.clearFlags = CameraClearFlags.Nothing;
+		colorCamera.depthTextureMode = DepthTextureMode.None;
 		colorCamera.cullingMask = 1 << (int)Mathf.Log(terrainLayer.value, 2);
 		colorTexture = new RenderTexture(1024, 1024, 0, RenderTextureFormat.ARGB32);
 		colorCamera.targetTexture = colorTexture;

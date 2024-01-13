@@ -6,15 +6,11 @@ Shader "Custom/Pixel"
     }
     SubShader
     {
-        // No culling or depth
-        Cull Off ZWrite Off ZTest Always
-
         Pass
         {
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-
             #include "UnityCG.cginc"
 
             struct appdata
@@ -41,7 +37,6 @@ Shader "Custom/Pixel"
             }
 
             float2 _BlockCount;
-
 
             fixed4 frag (v2f i) : SV_Target
             {

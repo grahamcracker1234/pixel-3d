@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 using static System.Runtime.InteropServices.Marshal;
 
 [RequireComponent(typeof(MeshGenerator))]
@@ -25,7 +26,7 @@ public class GrassInstancer : MonoBehaviour
     struct GrassData
     {
         public Matrix4x4 matrixTRS;
-        public Vector2 worldUV;
+        public Vector2 colorTexUV;
     }
 
     void Setup()
@@ -84,7 +85,7 @@ public class GrassInstancer : MonoBehaviour
                 grassData[index] = new GrassData
                 {
                     matrixTRS = Matrix4x4.TRS(position, rotation, Vector3.one * scale),
-                    worldUV = uv
+                    colorTexUV = uv
                 };
 
                 // Increment the index
@@ -142,6 +143,7 @@ public class GrassInstancer : MonoBehaviour
 
         // Render the grass
         // https://docs.unity3d.com/ScriptReference/Graphics.RenderMeshIndirect.html
+        // CommandBuffer.SetGlobalTexture("_ShadowMapTexture", BuiltinRenderTextureType.N);
         Graphics.RenderMeshIndirect(_renderParams, _grassMesh, commandBuffer, commandCount);
     }
 
