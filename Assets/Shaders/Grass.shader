@@ -14,7 +14,6 @@ Shader "Custom/Grass"
      {
         Tags {
             "RenderType" = "Transparent"
-            // "RenderType" = "Transparent"
             // "Queue" = "Transparent"
             "PreviewType" = "Plane"
             "LightMode" = "ForwardBase"
@@ -66,11 +65,6 @@ Shader "Custom/Grass"
             float _WindStrength;
             StructuredBuffer<GrassData> _GrassData;
             sampler2D _ColorTex;
-            sampler2D _CameraDepthTexture;
-
-            // UNITY_DECLARE_SHADOWMAP(_MainShadowMapTexture);
-            // float4 _SunCascadedShadowMap_TexelSize;
-            // sampler2D _MainShadowMapTexture;
 
             float remap(float value, float low1, float high1, float low2, float high2)
             {
@@ -100,19 +94,10 @@ Shader "Custom/Grass"
 
             float4 frag(v2f i) : SV_Target
             {
-                float2 depthUV = i.pos.xy / _ScreenParams.xy;
-                float depth = tex2D(_CameraDepthTexture, depthUV).r;
-                if (i.depth <= depth)
-                    discard;
-
-                // return float4(depth.xxx, 1);
                 float4 tex = tex2D(_MainTex, i.uv);
-
                 if (tex.a < _AlphaCutout)
                     discard;
 
-                // float shadow = SHADOW_ATTENUATION(i);
-                // return float4(shadow.xxx, 1);
                 float shadow = remap(step(0.75, SHADOW_ATTENUATION(i)), 0, 1, 0.5, 1);
                 float4 colorTex = tex2D(_ColorTex, i.colorTexUV);
                 float lum = dot(tex.xyz, float3(0.2126729, 0.7151522, 0.0721750));

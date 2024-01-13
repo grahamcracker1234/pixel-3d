@@ -143,7 +143,6 @@ public class GrassInstancer : MonoBehaviour
 
         // Render the grass
         // https://docs.unity3d.com/ScriptReference/Graphics.RenderMeshIndirect.html
-        // CommandBuffer.SetGlobalTexture("_ShadowMapTexture", BuiltinRenderTextureType.N);
         Graphics.RenderMeshIndirect(_renderParams, _grassMesh, commandBuffer, commandCount);
     }
 

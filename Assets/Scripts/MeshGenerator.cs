@@ -21,6 +21,7 @@ public class MeshGenerator : MonoBehaviour
 		var offset = new Vector3(0, size.y, 0);
 		var rotation = Quaternion.Euler(90, 0, 0);
 		colorCameraObject.transform.SetLocalPositionAndRotation(offset, rotation);
+
 		var colorCamera = colorCameraObject.AddComponent<Camera>();
 		colorCamera.orthographic = true;
 		colorCamera.orthographicSize = size.z / 2;
