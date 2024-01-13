@@ -23,13 +23,13 @@ Shader "Custom/Grass"
             Name "Grass"
 
             CGPROGRAM
-// Upgrade NOTE: excluded shader from DX11; has structs without semantics (struct v2f members worldUV)
-#pragma exclude_renderers d3d11
             #pragma vertex vert
             #pragma fragment frag
+            
             #include "UnityCG.cginc"
             #define UNITY_INDIRECT_DRAW_ARGS IndirectDrawIndexedArgs
             #include "UnityIndirect.cginc"
+            #include "Assets/Shaders/Random.cginc"
 
             struct appdata
             {
@@ -42,6 +42,7 @@ Shader "Custom/Grass"
                 float4 vertex : SV_POSITION;
                 float2 uv : TEXCOORD0;
                 float2 worldUV : TEXCOORD1;
+                uint instanceID : SV_InstanceID;
             };
 
             struct GrassData
@@ -66,13 +67,15 @@ Shader "Custom/Grass"
                 uint instanceID = GetIndirectInstanceID(svInstanceID);
                 
                 v2f o;
-                float offset = instanceID * 1.23039241;
+                // float offset = instanceID * 1.23039241;
+                float offset = randValue(instanceID) * 20;
                 float4 worldPosition = mul(_GrassData[instanceID].matrixTRS, float4(v.vertex.xyz, 1));
                 
                 worldPosition.x += sin((_Time.y + offset) * _WindSpeed + worldPosition.y - 0.5) * _WindStrength * pow(v.uv.y, 5);
                 o.vertex = UnityObjectToClipPos(worldPosition);
                 o.uv = v.uv;
                 o.worldUV = _GrassData[instanceID].worldUV;
+                o.instanceID = instanceID;
                 return o;
             }
 

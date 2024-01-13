@@ -57,8 +57,7 @@ public class GrassInstancer : MonoBehaviour
         // Initialize the matrices
         grassData = new GrassData[GetSampleCount()];
         grassBuffer?.Release();
-        // grassBuffer = new ComputeBuffer(GetSampleCount(), sizeof(float) * (4 * 4 + 2));
-        grassBuffer = new ComputeBuffer(GetSampleCount(), SizeOf(typeof(GrassData)));
+        grassBuffer = new ComputeBuffer(GetSampleCount(), SizeOf<GrassData>());
         commandBuffer?.Release();
         commandBuffer = new GraphicsBuffer(GraphicsBuffer.Target.IndirectArguments, commandCount, GraphicsBuffer.IndirectDrawIndexedArgs.size);
         commandData = new GraphicsBuffer.IndirectDrawIndexedArgs[commandCount];
@@ -137,7 +136,7 @@ public class GrassInstancer : MonoBehaviour
         if (grassData == null || grassData.Length == 0)
             Generate();
 
-        Generate(); // TODO: Remove this (add rotation angle to shader)
+        Generate(); // TODO: Remove this (add rotation angle to shader as uniform)
 
         // Render the grass
         // https://docs.unity3d.com/ScriptReference/Graphics.RenderMeshIndirect.html
