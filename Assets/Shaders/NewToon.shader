@@ -99,7 +99,7 @@ Shader "Custom/NewToon"
                 v2f o;
                 o.pos = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-                o.normal = v.normal;
+                o.normal = UnityObjectToWorldNormal(v.normal);
                 o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
                 TRANSFER_SHADOW(o)
                 return o;
