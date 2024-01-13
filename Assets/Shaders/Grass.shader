@@ -79,13 +79,14 @@ Shader "Custom/Grass"
             float4 frag(v2f i) : SV_Target
             {
                 float4 tex = tex2D(_MainTex, i.uv);
-                float4 colorTex = tex2D(_ColorTex, i.worldUV);
-                float lum = dot(tex.xyz, float3(0.2126729, 0.7151522, 0.0721750));
 
                 if (tex.a < _AlphaCutout)
                     discard;
-                
-                return float4(colorTex.rgb * lum, 1);
+
+                float4 colorTex = tex2D(_ColorTex, i.worldUV);
+                float lum = dot(tex.xyz, float3(0.2126729, 0.7151522, 0.0721750));
+                float3 color = lerp(colorTex.rgb, lum * _Color, i.uv.y * _Color.a);
+                return float4(color, 1);
             }
             ENDCG
         }
