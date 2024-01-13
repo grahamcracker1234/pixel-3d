@@ -109,7 +109,7 @@ Shader "Custom/NewToon"
             fixed4 frag (v2f i) : SV_Target
             {
                 fixed4 sample = tex2D(_MainTex, i.uv);
-                float shadow = remap(SHADOW_ATTENUATION(i), 0, 1, 0.5, 1);
+                float shadow = remap(step(0.75, SHADOW_ATTENUATION(i)), 0, 1, 0.5, 1);
                 float4 color = sample * _Color * shadow;
 
                 // Light positions and attenuations
