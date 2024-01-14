@@ -10,6 +10,7 @@
 - [ ] Pixel perfect camera with zoom and pan
 - [ ] Fix ghost mesh culling shadows at world origin
 - [ ] Poor depth outlining on large terrain of steep angles
+- [ ] Fix grass angle occluded on steep terrain
 
 ## Info
 
