@@ -48,13 +48,13 @@ Shader "Custom/Grass"
                 float2 colorTexUV : TEXCOORD1;
                 uint instanceID : SV_InstanceID;
                 float depth : Depth;
-                float4 worldPosition : COLOR;
+                float4 worldPosition : POSITION1;
                 SHADOW_COORDS(2)
             };
 
             struct GrassData
             {
-                float4x4 matrixTRS;
+                float3 position;
                 float2 colorTexUV;
             };
 
@@ -66,11 +66,22 @@ Shader "Custom/Grass"
             float _TipColorShift;
             float _WindSpeed;
             float _WindStrength;
+
             StructuredBuffer<GrassData> _GrassData;
+            float4 _Rotation;
+            float _Scale;
 
             float remap(float value, float low1, float high1, float low2, float high2)
             {
                 return low2 + (value - low1) * (high2 - low2) / (high1 - low1);
+            }
+
+            // https://gamedev.stackexchange.com/questions/28395/
+            float3 rotate(float3 v, float4 quaternion)
+            {
+                float3 u = quaternion.xyz;
+                float s = quaternion.w;
+                return 2 * dot(u, v) * u + (s * s - dot(u, u)) * v + 2 * s * cross(u, v);
             }
 
             v2f vert (appdata v, uint svInstanceID : SV_InstanceID)
@@ -81,9 +92,10 @@ Shader "Custom/Grass"
                 
                 v2f o;
                 float offset = randValue(instanceID) * 20;
-                float4 worldPosition = mul(_GrassData[instanceID].matrixTRS, float4(v.vertex.xyz, 1));
-                
+                float3 localPosition = rotate(v.vertex.xyz * _Scale, _Rotation);
+                float4 worldPosition = float4(localPosition + _GrassData[instanceID].position, 1);
                 worldPosition.x += sin((_Time.y + offset) * _WindSpeed + worldPosition.y - 0.5) * _WindStrength * pow(v.uv.y, 5);
+
                 o.worldPosition = worldPosition;
                 o.pos = UnityObjectToClipPos(worldPosition);
                 o.uv = v.uv;
@@ -104,8 +116,6 @@ Shader "Custom/Grass"
                 float4 color = tex2D(_ColorTex, i.colorTexUV) * tex;
                 float lum = dot(color.rgb, float3(0.2126729, 0.7151522, 0.0721750));
                 float lumTip = dot(_TipColor.rgb, float3(0.2126729, 0.7151522, 0.0721750));
-                // float3 color = lerp(colorTex.rgb, lum * _Color, i.uv.y * _Color.a);
-                // float3 color = colorTex.rgb * lerp(1, lum * _Color * (1 - _ColorShift), i.uv.y);
                 float4 tipColor = lerp(color, _TipColor, _TipColorShift);
                 return float4(lerp(color, tipColor, i.uv.y).rgb * shadow, 1);
             }

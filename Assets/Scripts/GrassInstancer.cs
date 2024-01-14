@@ -1,6 +1,5 @@
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Rendering;
 using static System.Runtime.InteropServices.Marshal;
 
 [RequireComponent(typeof(MeshGenerator))]
@@ -16,17 +15,31 @@ public class GrassInstancer : MonoBehaviour
     RenderParams _renderParams;
     Vector2Int _sampleCount;
 
-    GrassData[] grassData;
     GraphicsBuffer commandBuffer;
     GraphicsBuffer.IndirectDrawIndexedArgs[] commandData;
+    GrassData[] grassData;
+    ComputeBuffer grassBuffer;
+
     const int commandCount = 1;
 
-    ComputeBuffer grassBuffer;
 
     struct GrassData
     {
-        public Matrix4x4 matrixTRS;
+        public Vector3 position;
         public Vector2 colorTexUV;
+    }
+
+    void OnEnable()
+    {
+        Setup();
+    }
+
+    void OnDisable()
+    {
+        commandBuffer?.Release();
+        commandBuffer = null;
+        grassBuffer?.Release();
+        grassBuffer = null;
     }
 
     void Setup()
@@ -44,6 +57,11 @@ public class GrassInstancer : MonoBehaviour
 
         if (_grassMesh == null)
             Debug.LogError("Grass mesh is null");
+    }
+
+    public int GetSampleCount()
+    {
+        return _sampleCount.x * _sampleCount.y;
     }
 
     void Generate()
@@ -67,6 +85,9 @@ public class GrassInstancer : MonoBehaviour
         var target = Camera.main.transform.position;
         var rotation = Quaternion.LookRotation(transform.position - target, Vector3.up);
 
+        // Scale
+        var scale = 0.5f;
+
         // Loop through each grass
         var index = 0;
         for (int y = 0; y < _sampleCount.y; y++)
@@ -75,7 +96,6 @@ public class GrassInstancer : MonoBehaviour
             {
                 // Calculate the position and uv with random offset
                 var randomOffset = Random.insideUnitCircle / 2;
-                var scale = 0.5f;
                 var uv = (new Vector2(x, y) + Vector2.one / 2 + randomOffset) / _sampleCount;
                 var position2D = (uv - Vector2.one / 2) * size;
                 var height = _grassMesh.bounds.size.y / 2 * scale + _meshGenerator.GetMeshHeight(uv);
@@ -84,7 +104,7 @@ public class GrassInstancer : MonoBehaviour
                 // Set the grass data
                 grassData[index] = new GrassData
                 {
-                    matrixTRS = Matrix4x4.TRS(position, rotation, Vector3.one * scale),
+                    position = position,
                     colorTexUV = uv
                 };
 
@@ -111,14 +131,21 @@ public class GrassInstancer : MonoBehaviour
         var block = new MaterialPropertyBlock();
         block.SetTexture("_ColorTex", _meshGenerator.colorTexture);
         block.SetBuffer("_GrassData", grassBuffer);
+        block.SetVector("_Rotation", new Vector4(rotation.x, rotation.y, rotation.z, rotation.w));
+        block.SetFloat("_Scale", scale);
+
         _renderParams = new RenderParams(_material)
         {
             layer = (int)Mathf.Log(_grassLayer.value, 2),
             worldBounds = new Bounds(Vector3.zero, 10000 * Vector3.one),
             matProps = block,
             receiveShadows = true,
-            shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On,
         };
+    }
+
+    void CullGrass()
+    {
+
     }
 
     void Update()
@@ -139,24 +166,16 @@ public class GrassInstancer : MonoBehaviour
         if (grassData == null || grassData.Length == 0)
             Generate();
 
-        Generate(); // TODO: Remove this (add rotation angle to shader as uniform)
+        // Set the rotation
+        var target = Camera.main.transform.position;
+        var rotation = Quaternion.LookRotation(transform.position - target, Vector3.up);
+        _renderParams.matProps.SetVector("_Rotation", new Vector4(rotation.x, rotation.y, rotation.z, rotation.w));
+
+        // Generate(); // TODO: Remove this (add rotation angle to shader as uniform)
 
         // Render the grass
         // https://docs.unity3d.com/ScriptReference/Graphics.RenderMeshIndirect.html
         Graphics.RenderMeshIndirect(_renderParams, _grassMesh, commandBuffer, commandCount);
-    }
-
-    void OnDisable()
-    {
-        commandBuffer?.Release();
-        commandBuffer = null;
-        grassBuffer?.Release();
-        grassBuffer = null;
-    }
-
-    public int GetSampleCount()
-    {
-        return _sampleCount.x * _sampleCount.y;
     }
 }
 
