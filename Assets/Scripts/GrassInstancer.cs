@@ -88,9 +88,6 @@ public class GrassInstancer : MonoBehaviour
         var target = Camera.main.transform.position;
         var rotation = Quaternion.LookRotation(transform.position - target, Vector3.up);
 
-        // Scale
-        var scale = 0.5f;
-
         // Loop through each grass
         var index = 0;
         for (int y = 0; y < _sampleCount.y; y++)
@@ -101,7 +98,7 @@ public class GrassInstancer : MonoBehaviour
                 var randomOffset = Random.insideUnitCircle / 2;
                 var uv = (new Vector2(x, y) + Vector2.one / 2 + randomOffset) / _sampleCount;
                 var position2D = (uv - Vector2.one / 2) * size;
-                var height = _grassMesh.bounds.size.y / 2 * scale + _meshGenerator.GetMeshHeight(uv);
+                var height = _meshGenerator.GetMeshHeight(uv);
                 var position = transform.TransformPoint(new Vector3(position2D.x, height, position2D.y));
 
                 // Set the grass data
@@ -135,7 +132,7 @@ public class GrassInstancer : MonoBehaviour
         block.SetTexture("_ColorTex", _meshGenerator.colorTexture);
         block.SetBuffer("_GrassData", grassBuffer);
         block.SetVector("_Rotation", new Vector4(rotation.x, rotation.y, rotation.z, rotation.w));
-        block.SetFloat("_Scale", scale);
+        block.SetFloat("_MeshHeight", _grassMesh.bounds.size.y);
 
         _renderParams = new RenderParams(_material)
         {
@@ -144,11 +141,6 @@ public class GrassInstancer : MonoBehaviour
             matProps = block,
             receiveShadows = true,
         };
-    }
-
-    void CullGrass()
-    {
-
     }
 
     void Update()
@@ -171,10 +163,7 @@ public class GrassInstancer : MonoBehaviour
         var rotation = Quaternion.LookRotation(transform.position - target, Vector3.up);
         _renderParams.matProps.SetVector("_Rotation", new Vector4(rotation.x, rotation.y, rotation.z, rotation.w));
 
-        // Generate(); // TODO: Remove this (add rotation angle to shader as uniform)
-
         // Render the grass
-        // https://docs.unity3d.com/ScriptReference/Graphics.RenderMeshIndirect.html
         Graphics.RenderMeshIndirect(_renderParams, _grassMesh, commandBuffer, commandCount);
     }
 }

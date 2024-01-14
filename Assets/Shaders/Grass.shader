@@ -7,6 +7,7 @@ Shader "Custom/Grass"
         _ColorTex("Color Texture", 2D) = "white" {}
         _TipColor("Tip Color", Color) = (0, 0, 0, 1)
         _TipColorShift("Tip Color Shift", Range(0, 1)) = 0.2
+        _Scale("Scale", Range(0, 3)) = 0.5
         _WindSpeed("Wind Speed", Range(0, 1)) = 0.5
         _WindStrength("Wind Strength", Range(0, 1)) = 0.5
     }
@@ -63,12 +64,13 @@ Shader "Custom/Grass"
             float _AlphaCutout;
             float4 _TipColor;
             float _TipColorShift;
+            float _Scale;
             float _WindSpeed;
             float _WindStrength;
 
             StructuredBuffer<GrassData> _GrassData;
             float4 _Rotation;
-            float _Scale;
+            float _MeshHeight;
 
             float remap(float value, float low1, float high1, float low2, float high2)
             {
@@ -96,8 +98,8 @@ Shader "Custom/Grass"
                 
                 v2f o;
                 float offset = randValue(instanceID) * 20;
-                float3 localPosition = rotate(v.vertex.xyz * _Scale, _Rotation);
-                float4 worldPosition = float4(localPosition + _GrassData[instanceID].position, 1);
+                float3 localPosition = rotate(v.vertex.xyz + float3(0, _MeshHeight / 2, 0), _Rotation);
+                float4 worldPosition = float4(localPosition * _Scale + _GrassData[instanceID].position, 1);
                 worldPosition.x += sin((_Time.y + offset) * _WindSpeed + worldPosition.y - 0.5) * _WindStrength * pow(v.uv.y, 5);
 
                 o.worldPosition = worldPosition;
