@@ -64,7 +64,7 @@ public class GrassInstancer : MonoBehaviour
         return _sampleCount.x * _sampleCount.y;
     }
 
-    void Generate()
+    public void Generate()
     {
         // Set the seed
         Random.InitState(_seed);
@@ -72,6 +72,9 @@ public class GrassInstancer : MonoBehaviour
         // Get the size and sample count
         var size = new Vector2(_meshGenerator.size.x, _meshGenerator.size.z);
         _sampleCount = new Vector2Int((int)(_density * size.x), (int)(_density * size.y));
+
+        if (_sampleCount.x <= 0 || _sampleCount.y <= 0)
+            return;
 
         // Initialize the matrices
         grassData = new GrassData[GetSampleCount()];
@@ -151,9 +154,6 @@ public class GrassInstancer : MonoBehaviour
     void Update()
     {
         // Validation checks
-        if (_density <= 0)
-            return;
-
         if (_meshGenerator == null)
             Setup();
 
@@ -189,5 +189,7 @@ public class GrassInstancerEditor : Editor
         DrawDefaultInspector();
         GUILayout.Space(10);
         GUILayout.Label("Sample Count: " + script.GetSampleCount());
+        if (GUILayout.Button("Generate Grass"))
+            script.Generate();
     }
 }

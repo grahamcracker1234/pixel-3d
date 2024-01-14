@@ -15,7 +15,6 @@ Shader "Custom/Grass"
      {
         Tags {
             "RenderType" = "Transparent"
-            // "Queue" = "Transparent"
             "PreviewType" = "Plane"
             "LightMode" = "ForwardBase"
         }
@@ -76,6 +75,11 @@ Shader "Custom/Grass"
                 return low2 + (value - low1) * (high2 - low2) / (high1 - low1);
             }
 
+            float luma(float3 color)
+            {
+                return dot(color, float3(0.2126729, 0.7151522, 0.0721750));
+            }
+
             // https://gamedev.stackexchange.com/questions/28395/
             float3 rotate(float3 v, float4 quaternion)
             {
@@ -114,14 +118,13 @@ Shader "Custom/Grass"
 
                 float shadow = remap(step(0.75, SHADOW_ATTENUATION(i)), 0, 1, 0.5, 1);
                 float4 color = tex2D(_ColorTex, i.colorTexUV) * tex;
-                float lum = dot(color.rgb, float3(0.2126729, 0.7151522, 0.0721750));
-                float lumTip = dot(_TipColor.rgb, float3(0.2126729, 0.7151522, 0.0721750));
+                float lum = luma(color.rgb);
+                float lumTip = luma(_TipColor.rgb);
                 float4 tipColor = lerp(color, _TipColor, _TipColorShift);
                 return float4(lerp(color, tipColor, i.uv.y).rgb * shadow, 1);
             }
             ENDCG
         }
-        // shadow casting support
         UsePass "Legacy Shaders/VertexLit/SHADOWCASTER"
     }
 }
