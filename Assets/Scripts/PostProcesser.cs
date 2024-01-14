@@ -95,7 +95,7 @@ public class PostProcesser : MonoBehaviour
 
         outlineMaterial.SetVector("_ScreenSize", screenSize);
 
-        if (grassState == ShaderState.On)
+        if (grassState == ShaderState.On && outlineState != ShaderState.Debug)
         {
             var grassCameraObject = new GameObject("GrassCamera");
             grassCameraObject.transform.SetParent(Camera.main.transform);
@@ -114,7 +114,7 @@ public class PostProcesser : MonoBehaviour
         if (outlineState != ShaderState.Off)
         {
             Graphics.Blit(src, tempTex, outlineMaterial);
-            if (grassState == ShaderState.On)
+            if (grassState == ShaderState.On && outlineState != ShaderState.Debug)
                 Graphics.Blit(tempTex, dest, grassBlendingMaterial);
             else
                 Graphics.Blit(tempTex, dest);

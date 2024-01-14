@@ -38,7 +38,7 @@ public class IsometricCameraPivot : MonoBehaviour
         }
 
         _targetAngleY = (_targetAngleY + 360) % 360;
-        _targetAngleX = Mathf.Clamp(_targetAngleX, 30, 60);
+        _targetAngleX = Mathf.Clamp(_targetAngleX, 23, 67);
 
         _currentAngleY = Mathf.LerpAngle(transform.eulerAngles.y, _targetAngleY, Time.deltaTime * _rotationSpeed);
         _currentAngleX = Mathf.LerpAngle(transform.eulerAngles.x, _targetAngleX, Time.deltaTime * _rotationSpeed);
