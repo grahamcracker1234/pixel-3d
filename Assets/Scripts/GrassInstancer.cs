@@ -84,10 +84,6 @@ public class GrassInstancer : MonoBehaviour
         commandBuffer = new GraphicsBuffer(GraphicsBuffer.Target.IndirectArguments, commandCount, GraphicsBuffer.IndirectDrawIndexedArgs.size);
         commandData = new GraphicsBuffer.IndirectDrawIndexedArgs[commandCount];
 
-        // Calculate the rotation
-        var target = Camera.main.transform.position;
-        var rotation = Quaternion.LookRotation(transform.position - target, Vector3.up);
-
         // Loop through each grass
         var index = 0;
         for (int y = 0; y < _sampleCount.y; y++)
@@ -131,7 +127,6 @@ public class GrassInstancer : MonoBehaviour
         var block = new MaterialPropertyBlock();
         block.SetTexture("_ColorTex", _meshGenerator.colorTexture);
         block.SetBuffer("_GrassData", grassBuffer);
-        block.SetVector("_Rotation", new Vector4(rotation.x, rotation.y, rotation.z, rotation.w));
         block.SetFloat("_MeshHeight", _grassMesh.bounds.size.y);
 
         _renderParams = new RenderParams(_material)
@@ -141,6 +136,17 @@ public class GrassInstancer : MonoBehaviour
             matProps = block,
             receiveShadows = true,
         };
+
+        UpdateRotation();
+    }
+
+    void UpdateRotation()
+    {
+        var target = Camera.main.transform.position;
+        // var rotation = Quaternion.identity;
+        var rotation = Quaternion.LookRotation(transform.position - target, Vector3.up);
+        Debug.Log(new Vector4(rotation.x, rotation.y, rotation.z, rotation.w));
+        _renderParams.matProps.SetVector("_Rotation", new Vector4(rotation.x, rotation.y, rotation.z, rotation.w));
     }
 
     void Update()
@@ -159,9 +165,7 @@ public class GrassInstancer : MonoBehaviour
             Generate();
 
         // Set the rotation
-        var target = Camera.main.transform.position;
-        var rotation = Quaternion.LookRotation(transform.position - target, Vector3.up);
-        _renderParams.matProps.SetVector("_Rotation", new Vector4(rotation.x, rotation.y, rotation.z, rotation.w));
+        UpdateRotation();
 
         // Render the grass
         Graphics.RenderMeshIndirect(_renderParams, _grassMesh, commandBuffer, commandCount);
