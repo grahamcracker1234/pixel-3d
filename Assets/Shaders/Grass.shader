@@ -98,10 +98,6 @@ Shader "Custom/Grass"
                 
                 v2f o;
                 float offset = randValue(instanceID) * 20;
-                // float3 localPosition = rotate(v.vertex.xyz + float3(0, _MeshHeight / 2, 0), _Rotation);
-                // float4 worldPosition = float4(localPosition * _Scale + _GrassData[instanceID].position, 1);
-                // worldPosition.x += sin((_Time.y + offset) * _WindSpeed + worldPosition.y - 0.5) * _WindStrength * pow(v.uv.y, 5);
-                // float3 localPosition = rotate(v.vertex.xyz + float3(0, _MeshHeight / 2, 0), _Rotation);
                 float3 localPosition = v.vertex.xyz + float3(0, _MeshHeight / 2, 0);
                 localPosition *= _Scale;
                 localPosition.x += sin((_Time.y + offset) * _WindSpeed + localPosition.y - 0.5) * _WindStrength * pow(v.uv.y, 5);
