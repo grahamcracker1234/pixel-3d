@@ -36,7 +36,7 @@ public class GrassInstancer : MonoBehaviour
     }
 
     GrassChunk[] grassChunks;
-    [SerializeField] int chunkCount = 2;
+    [SerializeField] int chunkCount = 1;
 
     void OnEnable()
     {
@@ -202,8 +202,6 @@ public class GrassInstancer : MonoBehaviour
         // Set the seed
         Random.InitState(_seed);
 
-        InitChunks();
-
         // Set the constant render params
         var block = new MaterialPropertyBlock();
         block.SetTexture("_ColorTex", _meshGenerator.colorTexture);
@@ -216,13 +214,10 @@ public class GrassInstancer : MonoBehaviour
             receiveShadows = true,
         };
 
-        var i = 0;
+        // Generate the chunks
+        InitChunks();
         foreach (var chunk in grassChunks)
-        {
-            if (i % 2 == 0)
-                SetupChunk(chunk);
-            i++;
-        }
+            SetupChunk(chunk);
     }
 
     // Update the rotation of the grass
@@ -250,9 +245,11 @@ public class GrassInstancer : MonoBehaviour
             Generate();
 
         // Render the chunks
+        var i = 0;
         UpdateRotation();
         foreach (var chunk in grassChunks)
         {
+            if (i++ % 2 == 1) continue;
             _renderParams.matProps.SetBuffer("_GrassData", chunk.grassBuffer);
             Graphics.RenderMeshIndirect(_renderParams, _grassMesh, chunk.commandBuffer);
         }

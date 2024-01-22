@@ -19,3 +19,4 @@
 - <https://www.shadertoy.com/playlist/fXlXzf&from=0&num=12>
 - <https://www.shadertoy.com/view/lsl3RH>
 - <https://forum.unity.com/threads/how-to-extract-view-depth-from-a-camera-render-with-a-shader.1506944>
+- <https://ameye.dev/notes/shaders-done-quick/>

@@ -51,22 +51,10 @@ Shader "Custom/PixelPerfectOutline"
             float4 _EdgeColor;
             float _ColorShift;
 
-            // #define SAMPLE_DEPTH_NORMAL(uv, name) \
-            //     float _##name##Depth; \
-            //     float3 name##Normal; \
-            //     DecodeDepthNormal(tex2D(_CameraDepthNormalsTexture, uv), _##name##Depth, name##Normal); \
-            //     float name##Depth = tex2D(_CameraDepthTexture, uv).r;
-
             #define SAMPLE_DEPTH_NORMAL(uv, name) \
                 float name##Depth; \
                 float3 name##Normal; \
                 DecodeDepthNormal(tex2D(_CameraDepthNormalsTexture, uv), name##Depth, name##Normal);
-            
-            // #define SAMPLE_DEPTH_NORMAL(uv, name) \
-            //     float2 name##roundedUV = floor(uv * _ScreenSize) / _ScreenSize; \
-            //     float name##Depth; \
-            //     float3 name##Normal; \
-            //     DecodeDepthNormal(tex2D(_CameraDepthNormalsTexture, name##roundedUV), name##Depth, name##Normal); \
 
             struct PassValue
             {
@@ -76,6 +64,7 @@ Shader "Custom/PixelPerfectOutline"
 
             float getDepthDiff(float depth, float neighborDepth)
             {
+                return neighborDepth - depth;
                 return saturate(neighborDepth - depth);
             }
 
