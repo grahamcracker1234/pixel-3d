@@ -5,7 +5,8 @@ Shader "Custom/Cel"
         _MainTex ("Texture", 2D) = "white" {}
         _ShadeTex ("Shade Texture", 2D) = "white" {}
         _Color ("Color", Color) = (1,1,1,1)
-        _ShadowColor ("Shadow Color", Color) = (0,0,0,1)
+        _DarknessColor ("Darkness Color", Color) = (0.5,0.5,0.5,1)
+        _DarknessMidpoint ("Darkness Midpoint", Range(0, 1)) = 0.5
         _ShadowThreshold ("Shadow Threshold", Range(0, 1)) = 0.5
         _ShadeBitDepth ("Shade Bit Depth", Range(0, 15)) = 5
     }
@@ -49,7 +50,8 @@ Shader "Custom/Cel"
 
             sampler2D _ShadeTex;
             float4 _Color;
-            float4 _ShadowColor;
+            float4 _DarknessColor;
+            float _DarknessMidpoint;
             float _ShadowThreshold;
             float _ShadeBitDepth;
 
@@ -70,45 +72,43 @@ Shader "Custom/Cel"
                 return dot(color, float3(0.299, 0.587, 0.114));
             }
 
-            float3 celShading(v2f i, float attenuation, float4 color, float4 lightColor, float3 lightDir, float4 shadow)
+            float3 celShading(v2f i, float attenuation, float4 color, float4 lightColor, float3 lightDir)
             {
+                // Shading texture
                 // float intensity = remap(dot(i.normal, lightDir), -1, 1, 0, 1);
                 // float4 shade = tex2D(_ShadeTex, float2(intensity, attenuation));
-                // shade = screen(shade, _ShadowColor);
+                // shade = screen(shade, _DarknessColor);
 
-                float intensity = max(0, dot(i.normal, lightDir));
+                float midpoint = remap(_DarknessMidpoint, 0, 1, -1, 1);
+                float intensity = remap(max(midpoint, dot(i.normal, lightDir)), midpoint, 1, 0, 1);
                 float4 shade = floor(intensity * _ShadeBitDepth) / _ShadeBitDepth;
-                shade = screen(shade, _ShadowColor);
+                shade = screen(shade, _DarknessColor);
 
-                // Remove shadows from the opposite side from light
-                shadow = dot(i.normal, lightDir) < 0 ? 1 : screen(shadow, _ShadowColor);
+                float4 shadow = SHADOW_ATTENUATION(i);
+                shadow = step(_ShadowThreshold, shadow);
+                #if 0
+                    shadow = screen(shadow, _DarknessColor);
+                #else
+                    // Remove shadows from the opposite side from light
+                    shadow = dot(i.normal, lightDir) < 0 ? 1 : screen(shadow, _DarknessColor);
+                #endif
 
                 float4 diffuse = color * shade * shadow * lightColor;
                 return diffuse.rgb;
             }
 
-            // float3 toonShading(v2f i, float attenuation, float4 color, float4 lightColor, float3 lightDir)
-            // {
-            //     float3 diffuseReflection = step(_AttenuationThreshold, attenuation) * color.rgb * lightColor.rgb * max(0, dot(i.normal, lightDir));
-            //     float3 maxGrayscale = grayscale(_Color.rgb);
-            //     float3 grayscaleColor = remap(grayscale(diffuseReflection), 0, maxGrayscale, 0, 1);
-            //     float3 quantizedColor = floor(grayscaleColor * _ShadeBitDepth) / _ShadeBitDepth;
-            //     float3 brightenedColor = remap(quantizedColor, 0, 1, _MaxDarkness, 1);
-            //     return brightenedColor * color.rgb * lightColor.rgb;
-            // }
-
-            float3 celShadingDirectional(v2f i, float4 color, float4 lightDir, float4 lightColor, float4 shadow)
+            float3 celShadingDirectional(v2f i, float4 color, float4 lightDir, float4 lightColor)
             {
-                return celShading(i, 1, color, lightColor, lightDir.xyz, shadow);
+                return celShading(i, 1, color, lightColor, lightDir.xyz);
             }
 
-            float3 celShadingPoint(v2f i, float4 color, float4 lightPos, float4 lightColor, float4 shadow)
+            float3 celShadingPoint(v2f i, float4 color, float4 lightPos, float4 lightColor)
             {
                 float3 vertexToLight = lightPos.xyz - i.worldPos;
                 float3 lightDir = normalize(vertexToLight);
                 float sqLength = dot(vertexToLight, vertexToLight);
                 float attenuation = 1 / (1 + sqLength * lightPos.a);
-                return celShading(i, attenuation, color, lightColor, lightDir, shadow);
+                return celShading(i, attenuation, color, lightColor, lightDir);
             }
 
             v2f vert (appdata v)
@@ -126,7 +126,6 @@ Shader "Custom/Cel"
             fixed4 frag (v2f i) : SV_Target
             {
                 fixed4 sample = tex2D(_MainTex, i.uv);
-                float4 shadow = step(_ShadowThreshold, SHADOW_ATTENUATION(i));
 
                 // Light positions and attenuations
                 float4 lightPos[4] = {
@@ -137,7 +136,7 @@ Shader "Custom/Cel"
                 };
 
                 // In ForwardBase pass, _WorldSpaceLightPos0 is always directional light
-                float3 diffuseReflection = celShadingDirectional(i, _Color, _WorldSpaceLightPos0, _LightColor0, shadow);
+                float3 diffuseReflection = celShadingDirectional(i, _Color, _WorldSpaceLightPos0, _LightColor0);
                 // for (int j = 0; j < 4; j++)
                 // {
                 //     float3 d = celShadingPoint(i, _Color, lightPos[j], unity_LightColor[j], shadow);
