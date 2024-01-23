@@ -229,6 +229,25 @@ public class GrassInstancer : MonoBehaviour
         _renderParams.matProps.SetVector("_Rotation", quaternion);
     }
 
+    void RenderChunks()
+    {
+        // Update the rotation
+        UpdateRotation();
+
+        // Render the chunks
+        foreach (var chunk in grassChunks)
+        {
+            // Frustum culling check for the chunk
+            var frustumPlanes = GeometryUtility.CalculateFrustumPlanes(Camera.main);
+            if (!GeometryUtility.TestPlanesAABB(frustumPlanes, chunk.bounds))
+                continue;
+
+            // Render the chunk
+            _renderParams.matProps.SetBuffer("_GrassData", chunk.grassBuffer);
+            Graphics.RenderMeshIndirect(_renderParams, _grassMesh, chunk.commandBuffer);
+        }
+    }
+
     void Update()
     {
         // Validation checks
@@ -245,14 +264,7 @@ public class GrassInstancer : MonoBehaviour
             Generate();
 
         // Render the chunks
-        var i = 0;
-        UpdateRotation();
-        foreach (var chunk in grassChunks)
-        {
-            if (i++ % 2 == 1) continue;
-            _renderParams.matProps.SetBuffer("_GrassData", chunk.grassBuffer);
-            Graphics.RenderMeshIndirect(_renderParams, _grassMesh, chunk.commandBuffer);
-        }
+        RenderChunks();
     }
 }
 
