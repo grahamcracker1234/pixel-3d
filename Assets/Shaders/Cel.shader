@@ -7,9 +7,7 @@ Shader "Custom/Cel"
         _Color ("Color", Color) = (1,1,1,1)
         _ShadowColor ("Shadow Color", Color) = (0,0,0,1)
         _ShadowThreshold ("Shadow Threshold", Range(0, 1)) = 0.5
-        _AttenuationThreshold ("Attenuation Threshold", Range(0, 1)) = 0
         _ShadeBitDepth ("Shade Bit Depth", Range(0, 15)) = 5
-        _MaxDarkness ("Max Darkness", Range(0, 1)) = 0.5
     }
     SubShader
     {
@@ -53,9 +51,7 @@ Shader "Custom/Cel"
             float4 _Color;
             float4 _ShadowColor;
             float _ShadowThreshold;
-            float _AttenuationThreshold;
             float _ShadeBitDepth;
-            float _MaxDarkness;
 
             float remap(float value, float low1, float high1, float low2, float high2)
             {
@@ -85,7 +81,7 @@ Shader "Custom/Cel"
                 shade = screen(shade, _ShadowColor);
 
                 // Remove shadows from the opposite side from light
-                shadow = dot(i.normal, lightDir) > 0 ? screen(shadow, _ShadowColor) : 1;
+                shadow = dot(i.normal, lightDir) < 0 ? 1 : screen(shadow, _ShadowColor);
 
                 float4 diffuse = color * shade * shadow * lightColor;
                 return diffuse.rgb;
@@ -137,7 +133,7 @@ Shader "Custom/Cel"
                     float4(unity_4LightPosX0.x, unity_4LightPosY0.x, unity_4LightPosZ0.x, unity_4LightAtten0.x),
                     float4(unity_4LightPosX0.y, unity_4LightPosY0.y, unity_4LightPosZ0.y, unity_4LightAtten0.y),
                     float4(unity_4LightPosX0.z, unity_4LightPosY0.z, unity_4LightPosZ0.z, unity_4LightAtten0.z),
-                    float4(unity_4LightPosX0.w, unity_4LightPosY0.w, unity_4LightPosZ0.w, unity_4LightAtten0.w)
+                    float4(unity_4LightPosX0.w, unity_4LightPosY0.w, unity_4LightPosZ0.w, unity_4LightAtten0.w),
                 };
 
                 // In ForwardBase pass, _WorldSpaceLightPos0 is always directional light
