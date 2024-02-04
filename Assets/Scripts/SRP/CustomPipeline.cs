@@ -25,11 +25,6 @@ namespace Pixel3d
             GraphicsSettings.useScriptableRenderPipelineBatching = useSRPBatcher;
             GraphicsSettings.lightsUseLinearIntensity = true;
         }
-        // {
-        //     this.dynamicBatching = dynamicBatching;
-        //     this.instancing = instancing;
-        //     GraphicsSettings.lightsUseLinearIntensity = true;
-        // }
 
         // Only needed for abstract class RenderPipeline, Unity 2022+ uses Render with List<Camera>
         protected override void Render(ScriptableRenderContext renderContext, Camera[] cameras) { }
