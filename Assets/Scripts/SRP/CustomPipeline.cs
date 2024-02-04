@@ -4,7 +4,7 @@ using UnityEngine.Rendering;
 
 namespace Pixel3d
 {
-    public class CustomPipeline : RenderPipeline
+    public partial class CustomPipeline : RenderPipeline
     {
         CameraRenderer renderer = new();
 
@@ -24,6 +24,7 @@ namespace Pixel3d
             this.useGPUInstancing = useGPUInstancing;
             GraphicsSettings.useScriptableRenderPipelineBatching = useSRPBatcher;
             GraphicsSettings.lightsUseLinearIntensity = true;
+            InitializeForEditor();
         }
 
         // Only needed for abstract class RenderPipeline, Unity 2022+ uses Render with List<Camera>

@@ -17,7 +17,7 @@
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/UnityInstancing.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/SpaceTransforms.hlsl"
 
-float Square (float x) {
+float Square(float x) {
 	return x * x;
 }
 
