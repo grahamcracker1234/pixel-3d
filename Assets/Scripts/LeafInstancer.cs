@@ -55,85 +55,15 @@ public class LeafInstancer : MonoBehaviour
             Debug.LogError("Grass mesh is null");
     }
 
-    // public void Generate()
-    // {
-    //     // Set the seed
-    //     Random.InitState(_seed);
-
-    //     // Get the size and sample count
-    //     var size = new Vector2(_meshSurfaceSampler.size.x, _meshSurfaceSampler.size.z);
-    //     _sampleCount = new Vector2Int((int)(_density * size.x), (int)(_density * size.y));
-
-    //     if (_sampleCount.x <= 0 || _sampleCount.y <= 0)
-    //         return;
-
-    //     // Initialize the matrices
-    //     grassData = new GrassData[GetSampleCount()];
-    //     grassBuffer?.Release();
-    //     grassBuffer = new ComputeBuffer(GetSampleCount(), SizeOf<GrassData>());
-    //     commandBuffer?.Release();
-    //     commandBuffer = new GraphicsBuffer(GraphicsBuffer.Target.IndirectArguments, commandCount, GraphicsBuffer.IndirectDrawIndexedArgs.size);
-    //     commandData = new GraphicsBuffer.IndirectDrawIndexedArgs[commandCount];
-
-    //     // Loop through each grass
-    //     var index = 0;
-    //     for (int y = 0; y < _sampleCount.y; y++)
-    //     {
-    //         for (int x = 0; x < _sampleCount.x; x++)
-    //         {
-    //             // Calculate the position and uv with random offset
-    //             var randomOffset = Random.insideUnitCircle / 2;
-    //             var uv = (new Vector2(x, y) + Vector2.one / 2 + randomOffset) / _sampleCount;
-    //             var position2D = (uv - Vector2.one / 2) * size;
-    //             var height = _meshSurfaceSampler.GetMeshHeight(uv);
-    //             var position = transform.TransformPoint(new Vector3(position2D.x, height, position2D.y));
-
-    //             // Set the grass data
-    //             grassData[index] = new GrassData
-    //             {
-    //                 position = position,
-    //                 colorTexUV = uv
-    //             };
-
-    //             // Increment the index
-    //             index++;
-    //         }
-    //     }
-
-    //     // Set the buffers
-    //     var indirectDrawIndexedArgs = new GraphicsBuffer.IndirectDrawIndexedArgs
-    //     {
-    //         indexCountPerInstance = _grassMesh.GetIndexCount(0),
-    //         instanceCount = (uint)GetSampleCount(),
-    //         startIndex = _grassMesh.GetIndexStart(0),
-    //         baseVertexIndex = _grassMesh.GetBaseVertex(0),
-    //         startInstance = 0,
-    //     };
-    //     for (int i = 0; i < commandCount; i++)
-    //         commandData[i] = indirectDrawIndexedArgs;
-    //     commandBuffer.SetData(commandData);
-    //     grassBuffer.SetData(grassData);
-
-    //     // Set the render params
-    //     var block = new MaterialPropertyBlock();
-    //     block.SetTexture("_ColorTex", _meshSurfaceSampler.colorTexture);
-    //     block.SetBuffer("_GrassData", grassBuffer);
-    //     block.SetFloat("_MeshHeight", _grassMesh.bounds.size.y);
-
-    //     _renderParams = new RenderParams(_material)
-    //     {
-    //         layer = (int)Mathf.Log(_grassLayer.value, 2),
-    //         worldBounds = new Bounds(Vector3.zero, 10000 * Vector3.one),
-    //         matProps = block,
-    //         receiveShadows = true,
-    //     };
-
-    //     UpdateRotation();
-    // }
+    public void GeneratePoints()
+    {
+        _meshSurfaceSampler.GeneratePoints();
+    }
 
     public void Generate()
     {
         var count = _meshSurfaceSampler.points.Length;
+        // var count = 1;
 
         leafData = new LeafData[count];
         leafBuffer?.Release();
@@ -222,6 +152,9 @@ public class LeafInstancerEditor : Editor
         DrawDefaultInspector();
         GUILayout.Space(10);
         if (GUILayout.Button("Generate Leaves"))
+        {
+            script.GeneratePoints();
             script.Generate();
+        }
     }
 }
