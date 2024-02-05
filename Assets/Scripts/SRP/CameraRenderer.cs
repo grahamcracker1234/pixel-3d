@@ -1,109 +1,132 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace Pixel3d
+public partial class CameraRenderer
 {
-    public partial class CameraRenderer
-    {
-        ScriptableRenderContext context;
-        Camera camera;
 
-        const string bufferName = "Render Camera";
-        CommandBuffer buffer = new CommandBuffer { name = bufferName };
+	const string bufferName = "Render Camera";
 
-        CullingResults cullingResults;
+	static ShaderTagId
+		unlitShaderTagId = new ShaderTagId("SRPDefaultUnlit"),
+		litShaderTagId = new ShaderTagId("CustomLit");
 
-        static ShaderTagId
-            unlitShaderTagId = new ShaderTagId("SRPDefaultUnlit"),
-            litShaderTagId = new ShaderTagId("CustomLit");
+	CommandBuffer buffer = new CommandBuffer
+	{
+		name = bufferName
+	};
 
-        Lighting lighting = new();
+	ScriptableRenderContext context;
 
-        public void Render(ScriptableRenderContext context, Camera camera, bool useDynamicBatching, bool useGPUInstancing, ShadowSettings shadowSettings)
-        {
-            this.context = context;
-            this.camera = camera;
+	Camera camera;
 
-            PrepareBuffer();
-            PrepareForSceneWindow();
+	CullingResults cullingResults;
 
-            if (!Cull(shadowSettings.maxDistance))
-                return;
+	Lighting lighting = new Lighting();
 
-            buffer.BeginSample(SampleName);
-            ExecuteBuffer();
-            lighting.Setup(context, cullingResults, shadowSettings);
-            buffer.EndSample(SampleName);
-            Setup();
-            DrawVisibleGeometry(useDynamicBatching, useGPUInstancing);
-            DrawUnsupportedShaders();
-            DrawGizmos();
-            lighting.Cleanup();
-            Submit();
-        }
+	public void Render(
+		ScriptableRenderContext context, Camera camera,
+		bool useDynamicBatching, bool useGPUInstancing, bool useLightsPerObject,
+		ShadowSettings shadowSettings
+	)
+	{
+		this.context = context;
+		this.camera = camera;
 
-        bool Cull(float maxShadowDistance)
-        {
-            if (camera.TryGetCullingParameters(out ScriptableCullingParameters p))
-            {
-                p.shadowDistance = Mathf.Min(maxShadowDistance, camera.farClipPlane);
-                cullingResults = context.Cull(ref p);
-                return true;
-            }
-            return false;
-        }
+		PrepareBuffer();
+		PrepareForSceneWindow();
+		if (!Cull(shadowSettings.maxDistance))
+		{
+			return;
+		}
 
-        void Setup()
-        {
-            context.SetupCameraProperties(camera);
-            CameraClearFlags flags = camera.clearFlags;
-            buffer.ClearRenderTarget(
-                flags <= CameraClearFlags.Depth,
-                flags <= CameraClearFlags.Color,
-                flags == CameraClearFlags.Color ? camera.backgroundColor.linear : Color.clear
-            );
-            buffer.BeginSample(SampleName);
-            ExecuteBuffer();
-        }
+		buffer.BeginSample(SampleName);
+		ExecuteBuffer();
+		lighting.Setup(context, cullingResults, shadowSettings, useLightsPerObject);
+		buffer.EndSample(SampleName);
+		Setup();
+		DrawVisibleGeometry(useDynamicBatching, useGPUInstancing, useLightsPerObject);
+		DrawUnsupportedShaders();
+		DrawGizmos();
+		lighting.Cleanup();
+		Submit();
+	}
 
-        void DrawVisibleGeometry(bool useDynamicBatching, bool useGPUInstancing)
-        {
-            // Opaque
-            var sortingSettings = new SortingSettings(camera)
-            {
-                criteria = SortingCriteria.CommonOpaque
-            };
-            var drawingSettings = new DrawingSettings(unlitShaderTagId, sortingSettings)
-            {
-                enableDynamicBatching = useDynamicBatching,
-                enableInstancing = useGPUInstancing
-            };
-            drawingSettings.SetShaderPassName(1, litShaderTagId);
-            var filteringSettings = new FilteringSettings(RenderQueueRange.opaque);
+	bool Cull(float maxShadowDistance)
+	{
+		if (camera.TryGetCullingParameters(out ScriptableCullingParameters p))
+		{
+			p.shadowDistance = Mathf.Min(maxShadowDistance, camera.farClipPlane);
+			cullingResults = context.Cull(ref p);
+			return true;
+		}
+		return false;
+	}
 
-            context.DrawRenderers(cullingResults, ref drawingSettings, ref filteringSettings);
+	void Setup()
+	{
+		context.SetupCameraProperties(camera);
+		CameraClearFlags flags = camera.clearFlags;
+		buffer.ClearRenderTarget(
+			flags <= CameraClearFlags.Depth,
+			flags <= CameraClearFlags.Color,
+			flags == CameraClearFlags.Color ? camera.backgroundColor.linear : Color.clear
+		);
+		buffer.BeginSample(SampleName);
+		ExecuteBuffer();
+	}
 
-            context.DrawSkybox(camera);
+	void Submit()
+	{
+		buffer.EndSample(SampleName);
+		ExecuteBuffer();
+		context.Submit();
+	}
 
-            // Transparent
-            sortingSettings.criteria = SortingCriteria.CommonTransparent;
-            drawingSettings.sortingSettings = sortingSettings;
-            filteringSettings.renderQueueRange = RenderQueueRange.transparent;
+	void ExecuteBuffer()
+	{
+		context.ExecuteCommandBuffer(buffer);
+		buffer.Clear();
+	}
 
-            context.DrawRenderers(cullingResults, ref drawingSettings, ref filteringSettings);
-        }
+	void DrawVisibleGeometry(
+		bool useDynamicBatching, bool useGPUInstancing, bool useLightsPerObject
+	)
+	{
+		PerObjectData lightsPerObjectFlags = useLightsPerObject ?
+			PerObjectData.LightData | PerObjectData.LightIndices :
+			PerObjectData.None;
+		var sortingSettings = new SortingSettings(camera)
+		{
+			criteria = SortingCriteria.CommonOpaque
+		};
+		var drawingSettings = new DrawingSettings(unlitShaderTagId, sortingSettings)
+		{
+			enableDynamicBatching = useDynamicBatching,
+			enableInstancing = useGPUInstancing,
+			perObjectData =
+				PerObjectData.ReflectionProbes |
+				PerObjectData.Lightmaps | PerObjectData.ShadowMask |
+				PerObjectData.LightProbe | PerObjectData.OcclusionProbe |
+				PerObjectData.LightProbeProxyVolume |
+				PerObjectData.OcclusionProbeProxyVolume |
+				lightsPerObjectFlags
+		};
+		drawingSettings.SetShaderPassName(1, litShaderTagId);
 
-        void Submit()
-        {
-            buffer.EndSample(SampleName);
-            ExecuteBuffer();
-            context.Submit();
-        }
+		var filteringSettings = new FilteringSettings(RenderQueueRange.opaque);
 
-        void ExecuteBuffer()
-        {
-            context.ExecuteCommandBuffer(buffer);
-            buffer.Clear();
-        }
-    }
+		context.DrawRenderers(
+			cullingResults, ref drawingSettings, ref filteringSettings
+		);
+
+		context.DrawSkybox(camera);
+
+		sortingSettings.criteria = SortingCriteria.CommonTransparent;
+		drawingSettings.sortingSettings = sortingSettings;
+		filteringSettings.renderQueueRange = RenderQueueRange.transparent;
+
+		context.DrawRenderers(
+			cullingResults, ref drawingSettings, ref filteringSettings
+		);
+	}
 }

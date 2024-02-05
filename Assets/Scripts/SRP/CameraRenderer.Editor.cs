@@ -1,80 +1,82 @@
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.Rendering;
 
-namespace Pixel3d
+partial class CameraRenderer
 {
-    partial class CameraRenderer
-    {
-        partial void DrawUnsupportedShaders();
 
-        partial void DrawGizmos();
+	partial void DrawGizmos();
 
-        partial void PrepareForSceneWindow();
+	partial void DrawUnsupportedShaders();
 
-        partial void PrepareBuffer();
+	partial void PrepareForSceneWindow();
+
+	partial void PrepareBuffer();
 
 #if UNITY_EDITOR
 
-        static ShaderTagId[] legacyShaderTagIds = {
-            new ShaderTagId("Always"),
-            new ShaderTagId("ForwardBase"),
-            new ShaderTagId("PrepassBase"),
-            new ShaderTagId("Vertex"),
-            new ShaderTagId("VertexLMRGBM"),
-            new ShaderTagId("VertexLM")
-        };
+	static ShaderTagId[] legacyShaderTagIds = {
+		new ShaderTagId("Always"),
+		new ShaderTagId("ForwardBase"),
+		new ShaderTagId("PrepassBase"),
+		new ShaderTagId("Vertex"),
+		new ShaderTagId("VertexLMRGBM"),
+		new ShaderTagId("VertexLM")
+	};
 
-        static Material errorMaterial;
+	static Material errorMaterial;
 
-        string SampleName { get; set; }
+	string SampleName { get; set; }
 
-        partial void DrawUnsupportedShaders()
-        {
-            if (errorMaterial == null)
-                errorMaterial = new Material(Shader.Find("Hidden/InternalErrorShader"));
+	partial void DrawGizmos()
+	{
+		if (Handles.ShouldRenderGizmos())
+		{
+			context.DrawGizmos(camera, GizmoSubset.PreImageEffects);
+			context.DrawGizmos(camera, GizmoSubset.PostImageEffects);
+		}
+	}
 
-            var drawingSettings = new DrawingSettings(legacyShaderTagIds[0], new SortingSettings(camera))
-            {
-                overrideMaterial = errorMaterial
-            };
+	partial void DrawUnsupportedShaders()
+	{
+		if (errorMaterial == null)
+		{
+			errorMaterial = new Material(Shader.Find("Hidden/InternalErrorShader"));
+		}
 
-            for (int i = 1; i < legacyShaderTagIds.Length; i++)
-                drawingSettings.SetShaderPassName(i, legacyShaderTagIds[i]);
+		var drawingSettings = new DrawingSettings(legacyShaderTagIds[0], new SortingSettings(camera))
+		{
+			overrideMaterial = errorMaterial
+		};
 
-            var filteringSettings = FilteringSettings.defaultValue;
-            context.DrawRenderers(cullingResults, ref drawingSettings, ref filteringSettings);
-        }
+		for (int i = 1; i < legacyShaderTagIds.Length; i++)
+		{
+			drawingSettings.SetShaderPassName(i, legacyShaderTagIds[i]);
+		}
 
-        partial void DrawGizmos()
-        {
-            if (Handles.ShouldRenderGizmos())
-            {
-                context.DrawGizmos(camera, GizmoSubset.PreImageEffects);
-                context.DrawGizmos(camera, GizmoSubset.PostImageEffects);
-            }
-        }
+		var filteringSettings = FilteringSettings.defaultValue;
+		context.DrawRenderers(cullingResults, ref drawingSettings, ref filteringSettings);
+	}
 
-        partial void PrepareForSceneWindow()
-        {
-            if (camera.cameraType == CameraType.SceneView)
-            {
-                ScriptableRenderContext.EmitWorldGeometryForSceneView(camera);
-            }
-        }
+	partial void PrepareForSceneWindow()
+	{
+		if (camera.cameraType == CameraType.SceneView)
+		{
+			ScriptableRenderContext.EmitWorldGeometryForSceneView(camera);
+		}
+	}
 
-        partial void PrepareBuffer()
-        {
-            Profiler.BeginSample("Editor Only");
-            buffer.name = SampleName = camera.name;
-            Profiler.EndSample();
-        }
+	partial void PrepareBuffer()
+	{
+		Profiler.BeginSample("Editor Only");
+		buffer.name = SampleName = camera.name;
+		Profiler.EndSample();
+	}
 
 #else
 
-        const string SampleName = bufferName;
+	const string SampleName = bufferName;
 
 #endif
-    }
 }

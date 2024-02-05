@@ -9,12 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e96a8be2d49674cada53fc3ae7ea1cda, type: 3}
+  m_Script: {fileID: 11500000, guid: 84e06638eaa634af89a35456e872d8a9, type: 3}
   m_Name: Pixel 3D Pipeline Asset
   m_EditorClassIdentifier: 
   useDynamicBatching: 1
   useGPUInstancing: 1
   useSRPBatcher: 1
+  useLightsPerObject: 1
   shadows:
     maxDistance: 100
     distanceFade: 0.1
@@ -26,4 +27,7 @@ MonoBehaviour:
       cascadeRatio2: 0.25
       cascadeRatio3: 0.5
       cascadeFade: 0.1
-      cascadeBlend: 0
+      cascadeBlend: 1
+    other:
+      atlasSize: 1024
+      filter: 0
