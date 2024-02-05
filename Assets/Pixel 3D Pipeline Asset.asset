@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84e06638eaa634af89a35456e872d8a9, type: 3}
   m_Name: Pixel 3D Pipeline Asset
   m_EditorClassIdentifier: 
+  allowHDR: 1
   useDynamicBatching: 1
   useGPUInstancing: 1
   useSRPBatcher: 1
@@ -30,4 +31,6 @@ MonoBehaviour:
       cascadeBlend: 1
     other:
       atlasSize: 1024
-      filter: 0
+      filter: 3
+  postFXSettings: {fileID: 11400000, guid: fb8606802f96c473fb9ff47becbd7b2f, type: 2}
+  colorLUTResolution: 32

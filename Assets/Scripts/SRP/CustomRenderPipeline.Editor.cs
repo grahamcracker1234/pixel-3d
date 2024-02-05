@@ -3,33 +3,27 @@ using UnityEngine;
 using UnityEngine.Experimental.GlobalIllumination;
 using LightType = UnityEngine.LightType;
 
-public partial class CustomRenderPipeline
-{
+public partial class CustomRenderPipeline {
 
-	partial void InitializeForEditor();
+	partial void InitializeForEditor ();
 
 #if UNITY_EDITOR
 
-	partial void InitializeForEditor()
-	{
+	partial void InitializeForEditor () {
 		Lightmapping.SetDelegate(lightsDelegate);
 	}
 
-	protected override void Dispose(bool disposing)
-	{
+	protected override void Dispose (bool disposing) {
 		base.Dispose(disposing);
 		Lightmapping.ResetDelegate();
 	}
 
 	static Lightmapping.RequestLightsDelegate lightsDelegate =
-		(Light[] lights, NativeArray<LightDataGI> output) =>
-		{
+		(Light[] lights, NativeArray<LightDataGI> output) => {
 			var lightData = new LightDataGI();
-			for (int i = 0; i < lights.Length; i++)
-			{
+			for (int i = 0; i < lights.Length; i++) {
 				Light light = lights[i];
-				switch (light.type)
-				{
+				switch (light.type) {
 					case LightType.Directional:
 						var directionalLight = new DirectionalLight();
 						LightmapperUtils.Extract(light, ref directionalLight);
@@ -44,7 +38,8 @@ public partial class CustomRenderPipeline
 						var spotLight = new SpotLight();
 						LightmapperUtils.Extract(light, ref spotLight);
 						spotLight.innerConeAngle = light.innerSpotAngle * Mathf.Deg2Rad;
-						spotLight.angularFalloff = AngularFalloffType.AnalyticAndInnerAngle;
+						spotLight.angularFalloff =
+							AngularFalloffType.AnalyticAndInnerAngle;
 						lightData.Init(ref spotLight);
 						break;
 					case LightType.Area:
