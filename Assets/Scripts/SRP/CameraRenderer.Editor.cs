@@ -3,17 +3,18 @@ using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.Rendering;
 
-partial class CameraRenderer {
+partial class CameraRenderer
+{
 
-	partial void DrawGizmosBeforeFX ();
+	partial void DrawGizmosBeforeFX();
 
-	partial void DrawGizmosAfterFX ();
-	
-	partial void DrawUnsupportedShaders ();
+	partial void DrawGizmosAfterFX();
 
-	partial void PrepareForSceneWindow ();
+	partial void DrawUnsupportedShaders();
 
-	partial void PrepareBuffer ();
+	partial void PrepareForSceneWindow();
+
+	partial void PrepareBuffer();
 
 #if UNITY_EDITOR
 
@@ -30,29 +31,47 @@ partial class CameraRenderer {
 
 	string SampleName { get; set; }
 
-	partial void DrawGizmosBeforeFX () {
-		if (Handles.ShouldRenderGizmos()) {
+	partial void DrawGizmosBeforeFX()
+	{
+		if (Handles.ShouldRenderGizmos())
+		{
+			if (useIntermediateBuffer)
+			{
+				Draw(depthAttachmentId, BuiltinRenderTextureType.CameraTarget, true);
+				ExecuteBuffer();
+			}
 			context.DrawGizmos(camera, GizmoSubset.PreImageEffects);
 		}
 	}
 
-	partial void DrawGizmosAfterFX () {
-		if (Handles.ShouldRenderGizmos()) {
+	partial void DrawGizmosAfterFX()
+	{
+		if (Handles.ShouldRenderGizmos())
+		{
+			if (postFXStack.IsActive)
+			{
+				Draw(depthAttachmentId, BuiltinRenderTextureType.CameraTarget, true);
+				ExecuteBuffer();
+			}
 			context.DrawGizmos(camera, GizmoSubset.PostImageEffects);
 		}
 	}
 
-	partial void DrawUnsupportedShaders () {
-		if (errorMaterial == null) {
+	partial void DrawUnsupportedShaders()
+	{
+		if (errorMaterial == null)
+		{
 			errorMaterial =
 				new Material(Shader.Find("Hidden/InternalErrorShader"));
 		}
 		var drawingSettings = new DrawingSettings(
 			legacyShaderTagIds[0], new SortingSettings(camera)
-		) {
+		)
+		{
 			overrideMaterial = errorMaterial
 		};
-		for (int i = 1; i < legacyShaderTagIds.Length; i++) {
+		for (int i = 1; i < legacyShaderTagIds.Length; i++)
+		{
 			drawingSettings.SetShaderPassName(i, legacyShaderTagIds[i]);
 		}
 		var filteringSettings = FilteringSettings.defaultValue;
@@ -61,13 +80,16 @@ partial class CameraRenderer {
 		);
 	}
 
-	partial void PrepareForSceneWindow () {
-		if (camera.cameraType == CameraType.SceneView) {
+	partial void PrepareForSceneWindow()
+	{
+		if (camera.cameraType == CameraType.SceneView)
+		{
 			ScriptableRenderContext.EmitWorldGeometryForSceneView(camera);
 		}
 	}
 
-	partial void PrepareBuffer () {
+	partial void PrepareBuffer()
+	{
 		Profiler.BeginSample("Editor Only");
 		buffer.name = SampleName = camera.name;
 		Profiler.EndSample();

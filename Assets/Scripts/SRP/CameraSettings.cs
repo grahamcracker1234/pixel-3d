@@ -2,7 +2,8 @@
 using UnityEngine.Rendering;
 
 [Serializable]
-public class CameraSettings {
+public class CameraSettings
+{
 
 	[RenderingLayerMaskField]
 	public int renderingLayerMask = -1;
@@ -14,13 +15,18 @@ public class CameraSettings {
 	public PostFXSettings postFXSettings = default;
 
 	[Serializable]
-	public struct FinalBlendMode {
+	public struct FinalBlendMode
+	{
 
 		public BlendMode source, destination;
 	}
 
-	public FinalBlendMode finalBlendMode = new FinalBlendMode {
+
+	public FinalBlendMode finalBlendMode = new FinalBlendMode
+	{
 		source = BlendMode.One,
 		destination = BlendMode.Zero
 	};
+
+	public bool copyColor = true, copyDepth = true;
 }

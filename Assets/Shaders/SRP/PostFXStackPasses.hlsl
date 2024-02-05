@@ -6,7 +6,6 @@
 
 TEXTURE2D(_PostFXSource);
 TEXTURE2D(_PostFXSource2);
-SAMPLER(sampler_linear_clamp);
 
 float4 _PostFXSource_TexelSize;
 
