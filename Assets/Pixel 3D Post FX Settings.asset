@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 307b61f2b85974cd79d98f056b238f30, type: 3}
   m_Name: Pixel 3D Post FX Settings
   m_EditorClassIdentifier: 
-  shader: {fileID: 0}
+  shader: {fileID: 4800000, guid: 7fff47b0bcd004f8d8e661d18af0b14c, type: 3}
   bloom:
     maxIterations: 0
     downscaleLimit: 1
     bicubicUpsampling: 0
-    threshold: 0
+    threshold: -0
     thresholdKnee: 0
     intensity: 0
-    fadeFireflies: 0
+    fadeFireflies: 1
     mode: 0
     scatter: 0.7
   colorAdjustments:

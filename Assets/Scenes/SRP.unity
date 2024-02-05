@@ -299,11 +299,24 @@ PrefabInstance:
       propertyPath: orthographic size
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 6713198489125426360, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
+      propertyPath: m_NormalizedViewPortRect.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6713198489125426360, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
+      propertyPath: m_NormalizedViewPortRect.width
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6713198489125426360, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
+      propertyPath: m_NormalizedViewPortRect.height
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7406818813415170370, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7406818813415170370, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -324,7 +337,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!108 &363037838
 Light:
   m_ObjectHideFlags: 0
@@ -551,9 +564,9 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 0, b: 1, a: 1}
-  m_Intensity: 6
+  m_Intensity: 44.63
   m_Range: 20
-  m_SpotAngle: 83.280365
+  m_SpotAngle: 152.9844
   m_InnerSpotAngle: 83.280365
   m_CookieSize: 10
   m_Shadows:
@@ -610,7 +623,7 @@ Transform:
   m_GameObject: {fileID: 648010028}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 5.25, z: -0.1}
+  m_LocalPosition: {x: 0, y: 5.25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1069,7 +1082,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f760923f5d2045b68a0ad937eb6e6d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseColor: {r: 0, g: 0, b: 0, a: 1}
+  baseColor: {r: 0.74559957, g: 1, b: 0.6084906, a: 1}
   cutoff: 0.5
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

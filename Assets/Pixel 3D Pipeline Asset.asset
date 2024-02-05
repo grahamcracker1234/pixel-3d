@@ -12,7 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84e06638eaa634af89a35456e872d8a9, type: 3}
   m_Name: Pixel 3D Pipeline Asset
   m_EditorClassIdentifier: 
-  allowHDR: 1
+  cameraBuffer:
+    allowHDR: 1
+    copyColor: 0
+    copyColorReflection: 0
+    copyDepth: 0
+    copyDepthReflections: 0
   useDynamicBatching: 1
   useGPUInstancing: 1
   useSRPBatcher: 1
@@ -34,3 +39,4 @@ MonoBehaviour:
       filter: 3
   postFXSettings: {fileID: 11400000, guid: fb8606802f96c473fb9ff47becbd7b2f, type: 2}
   colorLUTResolution: 32
+  cameraRendererShader: {fileID: 4800000, guid: ca83bab6df15c4a6097219f214f65387, type: 3}
