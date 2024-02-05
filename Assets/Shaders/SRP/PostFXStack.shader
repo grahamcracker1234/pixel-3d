@@ -141,5 +141,17 @@
 				#pragma fragment FinalPassFragment
 			ENDHLSL
 		}
+
+		Pass {
+			Name "Final Rescale"
+
+			Blend [_FinalSrcBlend] [_FinalDstBlend]
+			
+			HLSLPROGRAM
+				#pragma target 3.5
+				#pragma vertex DefaultPassVertex
+				#pragma fragment CopyPassFragment
+			ENDHLSL
+		}
 	}
 }

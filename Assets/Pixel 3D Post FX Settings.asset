@@ -14,14 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shader: {fileID: 4800000, guid: 7fff47b0bcd004f8d8e661d18af0b14c, type: 3}
   bloom:
-    maxIterations: 0
+    ignoreRenderScale: 1
+    maxIterations: 2
     downscaleLimit: 1
     bicubicUpsampling: 0
-    threshold: -0
-    thresholdKnee: 0
-    intensity: 0
+    threshold: 0.5
+    thresholdKnee: 0.5
+    intensity: 0.5
     fadeFireflies: 1
-    mode: 0
+    mode: 1
     scatter: 0.7
   colorAdjustments:
     postExposure: 0

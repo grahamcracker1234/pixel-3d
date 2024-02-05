@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine.Rendering;
+using UnityEngine;
 
 [Serializable]
 public class CameraSettings
@@ -9,6 +10,13 @@ public class CameraSettings
 	public int renderingLayerMask = -1;
 
 	public bool maskLights = false;
+
+	public enum RenderScaleMode { Inherit, Multiply, Override }
+
+	public RenderScaleMode renderScaleMode = RenderScaleMode.Inherit;
+
+	[Range(0.1f, 2f)]
+	public float renderScale = 1f;
 
 	public bool overridePostFX = false;
 
@@ -21,7 +29,6 @@ public class CameraSettings
 		public BlendMode source, destination;
 	}
 
-
 	public FinalBlendMode finalBlendMode = new FinalBlendMode
 	{
 		source = BlendMode.One,
@@ -29,4 +36,12 @@ public class CameraSettings
 	};
 
 	public bool copyColor = true, copyDepth = true;
+
+	public float GetRenderScale(float scale)
+	{
+		return
+			renderScaleMode == RenderScaleMode.Inherit ? scale :
+			renderScaleMode == RenderScaleMode.Override ? renderScale :
+			scale * renderScale;
+	}
 }

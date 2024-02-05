@@ -2,13 +2,16 @@
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Rendering/Custom Post FX Settings")]
-public class PostFXSettings : ScriptableObject {
+public class PostFXSettings : ScriptableObject
+{
 
 	[SerializeField]
 	Shader shader = default;
 
 	[System.Serializable]
-	public struct BloomSettings {
+	public struct BloomSettings
+	{
+		public bool ignoreRenderScale;
 
 		[Range(0f, 16f)]
 		public int maxIterations;
@@ -38,14 +41,16 @@ public class PostFXSettings : ScriptableObject {
 	}
 
 	[SerializeField]
-	BloomSettings bloom = new BloomSettings {
+	BloomSettings bloom = new BloomSettings
+	{
 		scatter = 0.7f
 	};
 
 	public BloomSettings Bloom => bloom;
 
 	[Serializable]
-	public struct ColorAdjustmentsSettings {
+	public struct ColorAdjustmentsSettings
+	{
 
 		public float postExposure;
 
@@ -63,14 +68,16 @@ public class PostFXSettings : ScriptableObject {
 	}
 
 	[SerializeField]
-	ColorAdjustmentsSettings colorAdjustments = new ColorAdjustmentsSettings {
+	ColorAdjustmentsSettings colorAdjustments = new ColorAdjustmentsSettings
+	{
 		colorFilter = Color.white
 	};
 
 	public ColorAdjustmentsSettings ColorAdjustments => colorAdjustments;
 
 	[Serializable]
-	public struct WhiteBalanceSettings {
+	public struct WhiteBalanceSettings
+	{
 
 		[Range(-100f, 100f)]
 		public float temperature, tint;
@@ -82,7 +89,8 @@ public class PostFXSettings : ScriptableObject {
 	public WhiteBalanceSettings WhiteBalance => whiteBalance;
 
 	[Serializable]
-	public struct SplitToningSettings {
+	public struct SplitToningSettings
+	{
 
 		[ColorUsage(false)]
 		public Color shadows, highlights;
@@ -92,7 +100,8 @@ public class PostFXSettings : ScriptableObject {
 	}
 
 	[SerializeField]
-	SplitToningSettings splitToning = new SplitToningSettings {
+	SplitToningSettings splitToning = new SplitToningSettings
+	{
 		shadows = Color.gray,
 		highlights = Color.gray
 	};
@@ -100,13 +109,15 @@ public class PostFXSettings : ScriptableObject {
 	public SplitToningSettings SplitToning => splitToning;
 
 	[Serializable]
-	public struct ChannelMixerSettings {
+	public struct ChannelMixerSettings
+	{
 
 		public Vector3 red, green, blue;
 	}
 
 	[SerializeField]
-	ChannelMixerSettings channelMixer = new ChannelMixerSettings {
+	ChannelMixerSettings channelMixer = new ChannelMixerSettings
+	{
 		red = Vector3.right,
 		green = Vector3.up,
 		blue = Vector3.forward
@@ -115,7 +126,8 @@ public class PostFXSettings : ScriptableObject {
 	public ChannelMixerSettings ChannelMixer => channelMixer;
 
 	[Serializable]
-	public struct ShadowsMidtonesHighlightsSettings {
+	public struct ShadowsMidtonesHighlightsSettings
+	{
 
 		[ColorUsage(false, true)]
 		public Color shadows, midtones, highlights;
@@ -126,7 +138,8 @@ public class PostFXSettings : ScriptableObject {
 
 	[SerializeField]
 	ShadowsMidtonesHighlightsSettings
-		shadowsMidtonesHighlights = new ShadowsMidtonesHighlightsSettings {
+		shadowsMidtonesHighlights = new ShadowsMidtonesHighlightsSettings
+		{
 			shadows = Color.white,
 			midtones = Color.white,
 			highlights = Color.white,
@@ -137,9 +150,10 @@ public class PostFXSettings : ScriptableObject {
 
 	public ShadowsMidtonesHighlightsSettings ShadowsMidtonesHighlights =>
 		shadowsMidtonesHighlights;
-	
+
 	[Serializable]
-	public struct ToneMappingSettings {
+	public struct ToneMappingSettings
+	{
 
 		public enum Mode { None, ACES, Neutral, Reinhard }
 
@@ -154,11 +168,16 @@ public class PostFXSettings : ScriptableObject {
 	[NonSerialized]
 	Material material;
 
-	public Material Material {
-		get {
-			if (material == null && shader != null) {
-				material = new Material(shader);
-				material.hideFlags = HideFlags.HideAndDontSave;
+	public Material Material
+	{
+		get
+		{
+			if (material == null && shader != null)
+			{
+				material = new Material(shader)
+				{
+					hideFlags = HideFlags.HideAndDontSave
+				};
 			}
 			return material;
 		}
