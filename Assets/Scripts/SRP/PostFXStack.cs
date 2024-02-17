@@ -31,8 +31,7 @@ public partial class PostFXStack
 
 	Vector2Int bufferSize;
 
-	int
-		bloomBicubicUpsamplingId = Shader.PropertyToID("_BloomBicubicUpsampling"),
+	int bloomBicubicUpsamplingId = Shader.PropertyToID("_BloomBicubicUpsampling"),
 		bloomIntensityId = Shader.PropertyToID("_BloomIntensity"),
 		bloomPrefilterId = Shader.PropertyToID("_BloomPrefilter"),
 		bloomResultId = Shader.PropertyToID("_BloomResult"),
@@ -40,8 +39,7 @@ public partial class PostFXStack
 		fxSourceId = Shader.PropertyToID("_PostFXSource"),
 		fxSource2Id = Shader.PropertyToID("_PostFXSource2");
 
-	int
-		colorGradingLUTId = Shader.PropertyToID("_ColorGradingLUT"),
+	int colorGradingLUTId = Shader.PropertyToID("_ColorGradingLUT"),
 		colorGradingLUTParametersId = Shader.PropertyToID("_ColorGradingLUTParameters"),
 		colorGradingLUTInLogId = Shader.PropertyToID("_ColorGradingLUTInLogC"),
 		colorAdjustmentsId = Shader.PropertyToID("_ColorAdjustments"),
@@ -102,8 +100,7 @@ public partial class PostFXStack
 		this.useHDR = useHDR;
 		this.context = context;
 		this.camera = camera;
-		this.settings =
-			camera.cameraType <= CameraType.SceneView ? settings : null;
+		this.settings = camera.cameraType <= CameraType.SceneView ? settings : null;
 		ApplySceneViewState();
 	}
 
