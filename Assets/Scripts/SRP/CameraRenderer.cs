@@ -110,6 +110,16 @@ public partial class CameraRenderer
 		}
 
 		float renderScale = cameraSettings.GetRenderScale(bufferSettings.renderScale);
+		var pixelSize = new Vector2Int(camera.pixelWidth, camera.pixelHeight);
+
+		if (bufferSettings.pixelHeight > 0)
+		{
+			pixelSize = new Vector2Int(
+				(int)(bufferSettings.pixelHeight * camera.aspect + 0.5f),
+				bufferSettings.pixelHeight
+			);
+		}
+
 		useScaledRendering = renderScale < 0.99f || renderScale > 1.01f;
 		PrepareBuffer();
 		PrepareForSceneWindow();
@@ -118,15 +128,16 @@ public partial class CameraRenderer
 			return;
 		}
 		useHDR = bufferSettings.allowHDR && camera.allowHDR;
+
 		if (useScaledRendering)
 		{
-			bufferSize.x = (int)(camera.pixelWidth * renderScale);
-			bufferSize.y = (int)(camera.pixelHeight * renderScale);
+			bufferSize.x = (int)(pixelSize.x * renderScale);
+			bufferSize.y = (int)(pixelSize.y * renderScale);
 		}
 		else
 		{
-			bufferSize.x = camera.pixelWidth;
-			bufferSize.y = camera.pixelHeight;
+			bufferSize.x = pixelSize.x;
+			bufferSize.y = pixelSize.y;
 		}
 
 		buffer.BeginSample(SampleName);

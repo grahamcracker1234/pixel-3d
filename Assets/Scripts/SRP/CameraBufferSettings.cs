@@ -7,6 +7,9 @@ public struct CameraBufferSettings
 
 	public bool copyColor, copyColorReflection, copyDepth, copyDepthReflections;
 
-	[Range(0.1f, 2f)]
+	[Range(0.0625f, 2f)]
 	public float renderScale;
+
+	[Range(0, 1080)]
+	public int pixelHeight;
 }
