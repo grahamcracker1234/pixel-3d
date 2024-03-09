@@ -58,7 +58,6 @@ public class PostProcesser : MonoBehaviour
         var pixelScreenWidth = (int)(pixelScreenHeight * Camera.main.aspect + 0.5f);
 
         var tempTex = RenderTexture.GetTemporary(src.descriptor);
-        // var pixelTex = RenderTexture.GetTemporary(src.descriptor);
         var grassTex = RenderTexture.GetTemporary(src.descriptor);
         var screenSize = new Vector2(Screen.width, Screen.height);
 

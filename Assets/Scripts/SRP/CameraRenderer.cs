@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.Rendering;
 
 public partial class CameraRenderer
@@ -17,7 +18,8 @@ public partial class CameraRenderer
 			   depthTextureId = Shader.PropertyToID("_CameraDepthTexture"),
 			   sourceTextureId = Shader.PropertyToID("_SourceTexture"),
 			   srcBlendId = Shader.PropertyToID("_CameraSrcBlend"),
-			   dstBlendId = Shader.PropertyToID("_CameraDstBlend");
+			   dstBlendId = Shader.PropertyToID("_CameraDstBlend"),
+			   filterModeId = Shader.PropertyToID("_SamplerStateFilterMode");
 
 	static CameraSettings defaultCameraSettings = new CameraSettings();
 
@@ -49,6 +51,8 @@ public partial class CameraRenderer
 	static Rect fullViewRect = new Rect(0f, 0f, 1f, 1f);
 
 	Vector2Int bufferSize;
+
+	CameraBufferSettings.SamplerStateFilterMode filterMode;
 
 	public CameraRenderer(Shader shader)
 	{
@@ -109,10 +113,18 @@ public partial class CameraRenderer
 			postFXSettings = cameraSettings.postFXSettings;
 		}
 
+		filterMode = bufferSettings.filterMode;
+
 		float renderScale = cameraSettings.GetRenderScale(bufferSettings.renderScale);
 		var pixelSize = new Vector2Int(camera.pixelWidth, camera.pixelHeight);
 
-		if (bufferSettings.pixelHeight > 0)
+		var usePixelSize = true;
+
+#if UNITY_EDITOR
+		usePixelSize = camera.cameraType != CameraType.SceneView;
+#endif
+
+		if (usePixelSize && bufferSettings.pixelHeight > 0)
 		{
 			pixelSize = new Vector2Int(
 				(int)(bufferSettings.pixelHeight * camera.aspect + 0.5f),
@@ -226,6 +238,7 @@ public partial class CameraRenderer
 		buffer.BeginSample(SampleName);
 		buffer.SetGlobalTexture(colorTextureId, missingTexture);
 		buffer.SetGlobalTexture(depthTextureId, missingTexture);
+		buffer.SetGlobalInteger(filterModeId, (int)filterMode);
 		ExecuteBuffer();
 	}
 

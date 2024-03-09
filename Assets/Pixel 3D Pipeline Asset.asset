@@ -19,6 +19,8 @@ MonoBehaviour:
     copyDepth: 0
     copyDepthReflections: 0
     renderScale: 1
+    pixelHeight: 180
+    filterMode: 0
   useDynamicBatching: 1
   useGPUInstancing: 1
   useSRPBatcher: 1
@@ -39,5 +41,5 @@ MonoBehaviour:
       atlasSize: 1024
       filter: 3
   postFXSettings: {fileID: 11400000, guid: fb8606802f96c473fb9ff47becbd7b2f, type: 2}
-  colorLUTResolution: 32
+  colorLUTResolution: 64
   cameraRendererShader: {fileID: 4800000, guid: ca83bab6df15c4a6097219f214f65387, type: 3}

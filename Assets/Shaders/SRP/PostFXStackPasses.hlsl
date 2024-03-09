@@ -14,21 +14,46 @@ float4 GetSourceTexelSize () {
 }
 
 // This overrides the default sampler for the post-processing stack
-#define SAMPLER sampler_point_clamp
+int _SamplerStateFilterMode;
 
 float4 GetSource(float2 screenUV) {
-	return SAMPLE_TEXTURE2D_LOD(_PostFXSource, SAMPLER, screenUV, 0);
+	if (_SamplerStateFilterMode == 0) {
+		return SAMPLE_TEXTURE2D_LOD(_PostFXSource, sampler_point_clamp, screenUV, 0);
+	} else if (_SamplerStateFilterMode == 1) {
+		return SAMPLE_TEXTURE2D_LOD(_PostFXSource, sampler_linear_clamp, screenUV, 0);
+	} else {
+		return SAMPLE_TEXTURE2D_LOD(_PostFXSource, sampler_trilinear_clamp, screenUV, 0);
+	}
 }
 
 float4 GetSourceBicubic (float2 screenUV) {
-	return SampleTexture2DBicubic(
-		TEXTURE2D_ARGS(_PostFXSource, SAMPLER), screenUV,
-		_PostFXSource_TexelSize.zwxy, 1.0, 0.0
-	);
+	if (_SamplerStateFilterMode == 0) {
+		return SampleTexture2DBicubic(
+			TEXTURE2D_ARGS(_PostFXSource, sampler_point_clamp), screenUV,
+			_PostFXSource_TexelSize.zwxy, 1.0, 0.0
+		);
+	} else if (_SamplerStateFilterMode == 1) {
+		return SampleTexture2DBicubic(
+			TEXTURE2D_ARGS(_PostFXSource, sampler_linear_clamp), screenUV,
+			_PostFXSource_TexelSize.zwxy, 1.0, 0.0
+		);
+	} else {
+		return SampleTexture2DBicubic(
+			TEXTURE2D_ARGS(_PostFXSource, sampler_trilinear_clamp), screenUV,
+			_PostFXSource_TexelSize.zwxy, 1.0, 0.0
+		);
+	
+	}
 }
 
 float4 GetSource2(float2 screenUV) {
-	return SAMPLE_TEXTURE2D_LOD(_PostFXSource2, SAMPLER, screenUV, 0);
+	if (_SamplerStateFilterMode == 0) {
+		return SAMPLE_TEXTURE2D_LOD(_PostFXSource2, sampler_point_clamp, screenUV, 0);
+	} else if (_SamplerStateFilterMode == 1) {
+		return SAMPLE_TEXTURE2D_LOD(_PostFXSource2, sampler_linear_clamp, screenUV, 0);
+	} else {
+		return SAMPLE_TEXTURE2D_LOD(_PostFXSource2, sampler_trilinear_clamp, screenUV, 0);
+	}
 }
 
 struct Varyings {
@@ -285,11 +310,25 @@ float4 ColorGradingReinhardPassFragment (Varyings input) : SV_TARGET {
 TEXTURE2D(_ColorGradingLUT);
 
 float3 ApplyColorGradingLUT (float3 color) {
-	return ApplyLut2D(
-		TEXTURE2D_ARGS(_ColorGradingLUT, SAMPLER),
-		saturate(_ColorGradingLUTInLogC ? LinearToLogC(color) : color),
-		_ColorGradingLUTParameters.xyz
-	);
+	if (_SamplerStateFilterMode == 0) {
+		return ApplyLut2D(
+			TEXTURE2D_ARGS(_ColorGradingLUT, sampler_point_clamp),
+			saturate(_ColorGradingLUTInLogC ? LinearToLogC(color) : color),
+			_ColorGradingLUTParameters.xyz
+		);
+	} else if (_SamplerStateFilterMode == 1) {
+		return ApplyLut2D(
+			TEXTURE2D_ARGS(_ColorGradingLUT, sampler_linear_clamp),
+			saturate(_ColorGradingLUTInLogC ? LinearToLogC(color) : color),
+			_ColorGradingLUTParameters.xyz
+		);
+	} else {
+		return ApplyLut2D(
+			TEXTURE2D_ARGS(_ColorGradingLUT, sampler_trilinear_clamp),
+			saturate(_ColorGradingLUTInLogC ? LinearToLogC(color) : color),
+			_ColorGradingLUTParameters.xyz
+		);
+	}
 }
 
 float4 FinalPassFragment (Varyings input) : SV_TARGET {

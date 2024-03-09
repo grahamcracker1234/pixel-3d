@@ -12,4 +12,14 @@ public struct CameraBufferSettings
 
 	[Range(0, 1080)]
 	public int pixelHeight;
+
+	public enum SamplerStateFilterMode
+	{
+		Point = 0,
+		Linear = 1,
+		Trilinear = 2,
+	}
+
+	public SamplerStateFilterMode filterMode;
 }
+

@@ -25,7 +25,6 @@ public class CameraSettings
 	[Serializable]
 	public struct FinalBlendMode
 	{
-
 		public BlendMode source, destination;
 	}
 

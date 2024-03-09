@@ -22,8 +22,9 @@
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/SpaceTransforms.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Packing.hlsl"
 
-SAMPLER(sampler_linear_clamp);
 SAMPLER(sampler_point_clamp);
+SAMPLER(sampler_linear_clamp);
+SAMPLER(sampler_trilinear_clamp);
 
 bool IsOrthographicCamera () {
 	return unity_OrthoParams.w;
