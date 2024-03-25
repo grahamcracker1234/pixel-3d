@@ -34,7 +34,7 @@ public class CameraSettings
 		destination = BlendMode.Zero
 	};
 
-	public bool copyColor = true, copyDepth = true;
+	public bool copyColor = true, copyDepth = true, copyNormal = true;
 
 	public float GetRenderScale(float scale)
 	{

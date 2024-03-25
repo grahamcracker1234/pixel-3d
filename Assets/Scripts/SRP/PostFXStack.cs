@@ -20,7 +20,8 @@ public partial class PostFXStack
 		ColorGradingNeutral,
 		ColorGradingReinhard,
 		Final,
-		FinalRescale
+		FinalRescale,
+		Test,
 	}
 
 	const string bufferName = "Post FX";

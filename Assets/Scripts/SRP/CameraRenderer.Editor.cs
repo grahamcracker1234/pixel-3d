@@ -37,7 +37,7 @@ partial class CameraRenderer
 		{
 			if (useIntermediateBuffer)
 			{
-				Draw(depthAttachmentId, BuiltinRenderTextureType.CameraTarget, true);
+				Draw(depthAttachmentId, BuiltinRenderTextureType.CameraTarget, 1);
 				ExecuteBuffer();
 			}
 			context.DrawGizmos(camera, GizmoSubset.PreImageEffects);
@@ -50,7 +50,7 @@ partial class CameraRenderer
 		{
 			if (postFXStack.IsActive)
 			{
-				Draw(depthAttachmentId, BuiltinRenderTextureType.CameraTarget, true);
+				Draw(depthAttachmentId, BuiltinRenderTextureType.CameraTarget, 1);
 				ExecuteBuffer();
 			}
 			context.DrawGizmos(camera, GizmoSubset.PostImageEffects);

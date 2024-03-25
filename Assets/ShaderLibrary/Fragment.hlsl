@@ -3,6 +3,7 @@
 
 TEXTURE2D(_CameraColorTexture);
 TEXTURE2D(_CameraDepthTexture);
+TEXTURE2D(_CameraNormalTexture);
 
 float4 _CameraBufferSize;
 

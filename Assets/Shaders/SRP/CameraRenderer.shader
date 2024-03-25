@@ -33,5 +33,28 @@
 				#pragma fragment CopyDepthPassFragment
 			ENDHLSL
 		}
+
+		Pass {
+			Name "Normal"
+
+			HLSLPROGRAM
+				#pragma target 3.5
+				#pragma vertex NormalPassVertex
+				#pragma fragment NormalPassFragment
+			ENDHLSL
+		}
+
+		Pass {
+			Name "PreFX"
+
+			// ColorMask 0
+			// ZWrite On
+			
+			HLSLPROGRAM
+				#pragma target 3.5
+				#pragma vertex DefaultPassVertex
+				#pragma fragment PreFXPassFragment
+			ENDHLSL
+		}
 	}
 }

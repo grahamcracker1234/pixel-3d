@@ -337,4 +337,9 @@ float4 FinalPassFragment (Varyings input) : SV_TARGET {
 	return color;
 }
 
+float4 TestPassFragment (Varyings input) : SV_TARGET {
+	float depth = SAMPLE_TEXTURE2D_LOD(_CameraDepthTexture, sampler_point_clamp, input.screenUV, 0);
+	return depth;
+}
+
 #endif

@@ -16,8 +16,10 @@ MonoBehaviour:
     allowHDR: 1
     copyColor: 0
     copyColorReflection: 0
-    copyDepth: 0
+    copyDepth: 1
     copyDepthReflections: 0
+    copyNormal: 0
+    copyNormalReflections: 0
     renderScale: 1
     pixelHeight: 180
     filterMode: 0
@@ -40,6 +42,6 @@ MonoBehaviour:
     other:
       atlasSize: 1024
       filter: 3
-  postFXSettings: {fileID: 11400000, guid: fb8606802f96c473fb9ff47becbd7b2f, type: 2}
+  postFXSettings: {fileID: 0}
   colorLUTResolution: 64
   cameraRendererShader: {fileID: 4800000, guid: ca83bab6df15c4a6097219f214f65387, type: 3}

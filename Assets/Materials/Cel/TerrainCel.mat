@@ -25,7 +25,10 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
-    - _ShadeBitDepth: 4
+    - _DarknessMidpoint: 0.64
+    - _ShadeBitDepth: 3.73
+    - _ShadowThreshold: 0.378
     m_Colors:
-    - _Color: {r: 0.53333336, g: 1, b: 0.5803922, a: 1}
+    - _Color: {r: 1, g: 0.53333336, b: 0.98161906, a: 1}
+    - _DarknessColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []

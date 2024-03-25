@@ -153,5 +153,15 @@
 				#pragma fragment CopyPassFragment
 			ENDHLSL
 		}
+
+		Pass {
+			Name "Test"
+
+			HLSLPROGRAM
+				#pragma target 3.5
+				#pragma vertex DefaultPassVertex
+				#pragma fragment TestPassFragment
+			ENDHLSL
+		}
 	}
 }

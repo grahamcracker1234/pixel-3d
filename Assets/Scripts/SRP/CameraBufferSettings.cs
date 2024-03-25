@@ -5,7 +5,9 @@ public struct CameraBufferSettings
 {
 	public bool allowHDR;
 
-	public bool copyColor, copyColorReflection, copyDepth, copyDepthReflections;
+	public bool copyColor, copyColorReflection,
+				copyDepth, copyDepthReflections,
+				copyNormal, copyNormalReflections;
 
 	[Range(0.0625f, 2f)]
 	public float renderScale;
