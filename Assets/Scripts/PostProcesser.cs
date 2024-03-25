@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -13,7 +14,10 @@ public class PostProcesser : MonoBehaviour
 
     [Header("Pixel Shader")]
     public ShaderState pixelState = ShaderState.On;
+    public bool dynamicPixelSize = false;
     public int screenHeight = 192;
+    public float pixelsPerUnit = 24f;
+    [Range(1f / 32f, 1)] public float zoom = 0.125f;
 
     [Header("Outline Shader")]
     public ShaderState outlineState = ShaderState.On;
@@ -53,6 +57,19 @@ public class PostProcesser : MonoBehaviour
 
         var grassBlendingMaterial = CoreUtils.CreateEngineMaterial("Custom/GrassBlending");
         grassBlendingMaterial.SetFloat("_AlphaThreshold", alphaThreshold);
+
+        Camera.main.orthographicSize = 1 / zoom;
+        var farPlane = 10 / zoom;
+        var pos = Camera.main.transform.localPosition;
+        pos.z = -farPlane / 2;
+        Camera.main.transform.SetLocalPositionAndRotation(pos, Quaternion.identity);
+        Camera.main.farClipPlane = farPlane;
+
+        if (dynamicPixelSize)
+        {
+            screenHeight = (int)(Screen.height * zoom);
+            screenHeight = screenHeight - (screenHeight % 2);
+        }
 
         var pixelScreenHeight = screenHeight;
         var pixelScreenWidth = (int)(pixelScreenHeight * Camera.main.aspect + 0.5f);

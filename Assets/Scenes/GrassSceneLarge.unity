@@ -131,6 +131,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 745590008549767091, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -27.2
+      objectReference: {fileID: 0}
     - target: {fileID: 4095360099563520640, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
       propertyPath: m_Name
       value: CameraPivot
@@ -174,6 +178,14 @@ PrefabInstance:
     - target: {fileID: 6499996012299327601, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6713198489125426360, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
+      propertyPath: far clip plane
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 7406818813415170370, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
+      propertyPath: zoom
+      value: 0.125
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
