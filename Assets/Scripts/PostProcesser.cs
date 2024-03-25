@@ -65,13 +65,13 @@ public class PostProcesser : MonoBehaviour
         Camera.main.transform.SetLocalPositionAndRotation(pos, Quaternion.identity);
         Camera.main.farClipPlane = farPlane;
 
+        var pixelScreenHeight = screenHeight;
+
         if (dynamicPixelSize)
         {
-            screenHeight = (int)(Screen.height * zoom);
-            screenHeight = screenHeight - (screenHeight % 2);
+            pixelScreenHeight = (int)(1 / zoom * pixelsPerUnit);
         }
 
-        var pixelScreenHeight = screenHeight;
         var pixelScreenWidth = (int)(pixelScreenHeight * Camera.main.aspect + 0.5f);
 
         var tempTex = RenderTexture.GetTemporary(src.descriptor);
