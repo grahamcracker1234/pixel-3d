@@ -1,5 +1,5 @@
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Experimental.GlobalIllumination;
 using UnityEngine.Rendering;
 
 [RequireComponent(typeof(Camera))]
@@ -28,6 +28,20 @@ public class PostProcesser : MonoBehaviour
     public Vector3 normalEdgeBias = Vector3.one;
     public float angleThreshold = 0.5f;
     public int angleFactorScale = 7;
+
+    [Header("Cloud Shader")]
+    public ShaderState cloudState = ShaderState.On;
+    public Shader cloudShader;
+    public Texture2D cloudsFineDetail;
+    public Texture2D cloudsMediumDetail;
+    public Texture2D cloudsLargeDetail;
+    public Light lightSource;
+    public float cloudSpeed = 0.1f;
+    [Range(0, 1)] public float cloudThickness = 0.5f;
+    [Range(0, 1)] public float cloudCoverage = 0.5f;
+    [Range(0, 360)] public float cloudDirection = 30f;
+    public float cloudZoom = 10f;
+
 
     public enum ShaderState
     {
@@ -59,7 +73,7 @@ public class PostProcesser : MonoBehaviour
         grassBlendingMaterial.SetFloat("_AlphaThreshold", alphaThreshold);
 
         Camera.main.orthographicSize = 1 / zoom;
-        var farPlane = 10 / zoom;
+        var farPlane = 20 / zoom;
         var pos = Camera.main.transform.localPosition;
         pos.z = -farPlane / 2;
         Camera.main.transform.SetLocalPositionAndRotation(pos, Quaternion.identity);
@@ -74,8 +88,12 @@ public class PostProcesser : MonoBehaviour
 
         var pixelScreenWidth = (int)(pixelScreenHeight * Camera.main.aspect + 0.5f);
 
+
+
         var tempTex = RenderTexture.GetTemporary(src.descriptor);
         var grassTex = RenderTexture.GetTemporary(src.descriptor);
+        var cloudTex = RenderTexture.GetTemporary(2048, 2048);
+
         var screenSize = new Vector2(Screen.width, Screen.height);
 
         if (pixelState == ShaderState.On)
@@ -107,6 +125,35 @@ public class PostProcesser : MonoBehaviour
             grassTex.filterMode = FilterMode.Bilinear;
             grassTex.Release();
             grassTex.Create();
+        }
+
+        if (cloudState == ShaderState.On)
+        {
+            var cloudMaterial = CoreUtils.CreateEngineMaterial(cloudShader);
+            cloudMaterial.SetFloat("_Speed", cloudSpeed);
+            cloudMaterial.SetFloat("_Coverage", cloudCoverage);
+            cloudMaterial.SetFloat("_Thickness", cloudThickness);
+            cloudMaterial.SetFloat("_Direction", cloudDirection);
+            cloudMaterial.SetTexture("_FineDetail", cloudsFineDetail);
+            cloudMaterial.SetTexture("_MediumDetail", cloudsMediumDetail);
+            cloudMaterial.SetTexture("_LargeDetail", cloudsLargeDetail);
+
+            var cloudTexTemp = RenderTexture.GetTemporary(2048, 2048);
+            cloudTexTemp.filterMode = FilterMode.Bilinear;
+            cloudTexTemp.wrapMode = TextureWrapMode.Repeat;
+
+            cloudTex.filterMode = FilterMode.Bilinear;
+            cloudTex.wrapMode = TextureWrapMode.Repeat;
+
+            Graphics.Blit(cloudTexTemp, cloudTex, cloudMaterial);
+
+            RenderTexture.ReleaseTemporary(cloudTexTemp);
+            lightSource.cookie = cloudTex;
+            lightSource.cookieSize = cloudZoom;
+        }
+        else
+        {
+            lightSource.cookie = null;
         }
 
         outlineMaterial.SetVector("_ScreenSize", screenSize);
@@ -148,6 +195,8 @@ public class PostProcesser : MonoBehaviour
 
         RenderTexture.ReleaseTemporary(tempTex);
         RenderTexture.ReleaseTemporary(grassTex);
+        RenderTexture.ReleaseTemporary(cloudTex);
+
         Graphics.SetRenderTarget(dest);
     }
 }

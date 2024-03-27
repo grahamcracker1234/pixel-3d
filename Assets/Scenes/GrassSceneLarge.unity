@@ -184,14 +184,63 @@ PrefabInstance:
       value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 7406818813415170370, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
+      propertyPath: sun
+      value: 
+      objectReference: {fileID: 300716702}
+    - target: {fileID: 7406818813415170370, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
       propertyPath: zoom
       value: 0.125
       objectReference: {fileID: 0}
+    - target: {fileID: 7406818813415170370, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
+      propertyPath: cloudZoom
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 7406818813415170370, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
+      propertyPath: cloudState
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7406818813415170370, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
+      propertyPath: cloudShader
+      value: 
+      objectReference: {fileID: 4800000, guid: 90c24f969a2a34bac8361bb427173be7, type: 3}
+    - target: {fileID: 7406818813415170370, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
+      propertyPath: lightSource
+      value: 
+      objectReference: {fileID: 300716702}
+    - target: {fileID: 7406818813415170370, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
+      propertyPath: cloudCoverage
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 7406818813415170370, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
+      propertyPath: cloudDirection
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 7406818813415170370, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
+      propertyPath: cloudsFineDetail
+      value: 
+      objectReference: {fileID: 2800000, guid: 4f6a3a35a7848452dad7369e4e81aff9, type: 3}
+    - target: {fileID: 7406818813415170370, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
+      propertyPath: dynamicPixelSize
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7406818813415170370, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
+      propertyPath: cloudsLargeDetail
+      value: 
+      objectReference: {fileID: 2800000, guid: cf63fd381eb894befb62f0c56f0c04a7, type: 3}
+    - target: {fileID: 7406818813415170370, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
+      propertyPath: cloudsMediumDetail
+      value: 
+      objectReference: {fileID: 2800000, guid: b7e91822c4a3e494e8aa4ed65575ef25, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
+--- !u!108 &300716702 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 3298906188457390365, guid: 79972ebbc68a545c383d16456b6a9177, type: 3}
+  m_PrefabInstance: {fileID: 337698527}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &309254625
 GameObject:
   m_ObjectHideFlags: 0
@@ -286,6 +335,14 @@ PrefabInstance:
     - target: {fileID: 1198576531615060406, guid: 79972ebbc68a545c383d16456b6a9177, type: 3}
       propertyPath: m_Name
       value: DirectionalLight
+      objectReference: {fileID: 0}
+    - target: {fileID: 3298906188457390365, guid: 79972ebbc68a545c383d16456b6a9177, type: 3}
+      propertyPath: m_Cookie
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3298906188457390365, guid: 79972ebbc68a545c383d16456b6a9177, type: 3}
+      propertyPath: m_DrawHalo
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6028989799815382279, guid: 79972ebbc68a545c383d16456b6a9177, type: 3}
       propertyPath: m_LocalPosition.x
