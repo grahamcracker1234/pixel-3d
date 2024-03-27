@@ -196,6 +196,10 @@ PrefabInstance:
       value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 7406818813415170370, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
+      propertyPath: cloudSpeed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7406818813415170370, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
       propertyPath: cloudState
       value: 0
       objectReference: {fileID: 0}
@@ -209,11 +213,11 @@ PrefabInstance:
       objectReference: {fileID: 300716702}
     - target: {fileID: 7406818813415170370, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
       propertyPath: cloudCoverage
-      value: 0.15
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 7406818813415170370, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
       propertyPath: cloudDirection
-      value: 30
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7406818813415170370, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
       propertyPath: cloudsFineDetail
