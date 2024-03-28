@@ -255,16 +255,18 @@ Shader "Custom/Cel"
             v2f vert(appdata v) 
             {
                 v2f o;
-
-                float4 posWorld = mul(unity_ObjectToWorld, v.vertex);
-                o.posLight = mul(unity_WorldToLight, posWorld);
-                o.pos = UnityObjectToClipPos(v.vertex);
-
                 o.pos = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 o.normal = UnityObjectToWorldNormal(v.normal);
                 o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
                 TRANSFER_SHADOW(o)
+                
+                #if defined(DIRECTIONAL_COOKIE)
+                    float4 posWorld = mul(unity_ObjectToWorld, v.vertex);
+                    o.posLight = mul(unity_WorldToLight, posWorld);
+                #else 
+                    o.posLight = 0;
+                #endif
                 
                 return o;
             }
@@ -291,8 +293,12 @@ Shader "Custom/Cel"
                 // }
                 // diffuseReflection = blend(diffuseReflection, celShadingPoint(i, _Color, lightPos[j], unity_LightColor[j], 0), max);
                 // diffuseReflection = max(diffuseReflection, celShadingPoint(i, _Color, lightPos[j], unity_LightColor[j], shadow));
-
-                float4 cookieAttenuation = tex2D(_LightTexture0, i.posLight.xy);
+                
+                #if defined(DIRECTIONAL_COOKIE)
+                    float4 cookieAttenuation = tex2D(_LightTexture0, i.posLight.xy);
+                #else
+                    float4 cookieAttenuation = 1;
+                #endif
                 
                 // return cookieAttenuation;
                 // return float4(diffuseReflection, 1);

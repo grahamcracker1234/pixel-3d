@@ -344,6 +344,10 @@ PrefabInstance:
       propertyPath: zoom
       value: 0.125
       objectReference: {fileID: 0}
+    - target: {fileID: 7406818813415170370, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
+      propertyPath: lightSource
+      value: 
+      objectReference: {fileID: 2082868616}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -838,6 +842,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 142.01599, y: 4.5350037, z: -159.504}
+--- !u!108 &2082868616 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 3298906188457390365, guid: 79972ebbc68a545c383d16456b6a9177, type: 3}
+  m_PrefabInstance: {fileID: 5519591730515916379}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5519591730515916379
 PrefabInstance:
   m_ObjectHideFlags: 0

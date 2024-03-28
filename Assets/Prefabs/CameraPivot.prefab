@@ -113,7 +113,10 @@ MonoBehaviour:
   grassBlendingShader: {fileID: 4800000, guid: ca5c8e1ac59ce49209ce9d675628d119, type: 3}
   alphaThreshold: 0.5
   pixelState: 0
+  dynamicPixelSize: 0
   screenHeight: 192
+  pixelsPerUnit: 24
+  zoom: 0.125
   outlineState: 0
   outlineColor: {r: 0, g: 0, b: 0, a: 0.3764706}
   edgeColor: {r: 1, g: 1, b: 1, a: 0.1254902}
@@ -122,6 +125,17 @@ MonoBehaviour:
   normalEdgeBias: {x: 1, y: 1, z: 1}
   angleThreshold: 0.5
   angleFactorScale: 7
+  cloudState: 0
+  cloudShader: {fileID: 4800000, guid: 90c24f969a2a34bac8361bb427173be7, type: 3}
+  cloudsFineDetail: {fileID: 2800000, guid: 4f6a3a35a7848452dad7369e4e81aff9, type: 3}
+  cloudsMediumDetail: {fileID: 2800000, guid: b7e91822c4a3e494e8aa4ed65575ef25, type: 3}
+  cloudsLargeDetail: {fileID: 2800000, guid: cf63fd381eb894befb62f0c56f0c04a7, type: 3}
+  lightSource: {fileID: 0}
+  cloudSpeed: 1
+  cloudThickness: 0.5
+  cloudCoverage: 0.1
+  cloudDirection: 0
+  cloudZoom: 100
 --- !u!1 &4095360099563520640
 GameObject:
   m_ObjectHideFlags: 0
