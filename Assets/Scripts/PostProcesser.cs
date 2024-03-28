@@ -9,7 +9,6 @@ public class PostProcesser : MonoBehaviour
     public LayerMask grassLayer;
     public ShaderState grassState = ShaderState.On;
     public Shader grassReplacementShader;
-    public Shader grassBlendingShader;
     public float alphaThreshold = 0.5f;
 
     [Header("Pixel Shader")]
@@ -31,7 +30,6 @@ public class PostProcesser : MonoBehaviour
 
     [Header("Cloud Shader")]
     public ShaderState cloudState = ShaderState.On;
-    public Shader cloudShader;
     public Texture2D cloudsFineDetail;
     public Texture2D cloudsMediumDetail;
     public Texture2D cloudsLargeDetail;
@@ -129,7 +127,7 @@ public class PostProcesser : MonoBehaviour
 
         if (cloudState == ShaderState.On)
         {
-            var cloudMaterial = CoreUtils.CreateEngineMaterial(cloudShader);
+            var cloudMaterial = CoreUtils.CreateEngineMaterial("Custom/Clouds");
             cloudMaterial.SetFloat("_Speed", cloudSpeed);
             cloudMaterial.SetFloat("_Coverage", cloudCoverage);
             cloudMaterial.SetFloat("_Thickness", cloudThickness);

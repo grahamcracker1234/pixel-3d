@@ -39,5 +39,7 @@ Shader "Custom/GrassReplacement"
         Tags { "RenderType" = "Transparent" }
                 
         UsePass "Custom/Grass/GRASS"
+
+        UsePass "Custom/Grass/GRASSADD"
     }
 }
