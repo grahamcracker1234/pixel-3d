@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Experimental.GlobalIllumination;
 using UnityEngine.Rendering;
 
 [RequireComponent(typeof(Camera))]
@@ -55,6 +54,21 @@ public class PostProcesser : MonoBehaviour
             Camera.main.cullingMask = ~(1 << (int)Mathf.Log(grassLayer.value, 2));
     }
 
+    void UpdateZoom()
+    {
+        Camera.main.orthographicSize = 1 / zoom;
+        var farPlane = 20 / zoom;
+        var pos = Camera.main.transform.localPosition;
+        pos.z = -farPlane / 2;
+        Camera.main.transform.SetLocalPositionAndRotation(pos, Quaternion.identity);
+        Camera.main.farClipPlane = farPlane;
+    }
+
+    void OnValidate()
+    {
+        UpdateZoom();
+    }
+
     void OnRenderImage(RenderTexture src, RenderTexture dest)
     {
         var outlineMaterial = CoreUtils.CreateEngineMaterial("Custom/PixelPerfectOutline");
@@ -70,12 +84,7 @@ public class PostProcesser : MonoBehaviour
         var grassBlendingMaterial = CoreUtils.CreateEngineMaterial("Custom/GrassBlending");
         grassBlendingMaterial.SetFloat("_AlphaThreshold", alphaThreshold);
 
-        Camera.main.orthographicSize = 1 / zoom;
-        var farPlane = 20 / zoom;
-        var pos = Camera.main.transform.localPosition;
-        pos.z = -farPlane / 2;
-        Camera.main.transform.SetLocalPositionAndRotation(pos, Quaternion.identity);
-        Camera.main.farClipPlane = farPlane;
+        UpdateZoom();
 
         var pixelScreenHeight = screenHeight;
 
