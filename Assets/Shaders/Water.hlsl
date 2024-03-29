@@ -22,10 +22,42 @@ float getRawDepth(float2 uv) {
 
 float3 getScenePosWS(float2 uv)
 {
-    float3 rayVS = mul(unity_CameraInvProjection, float4(uv * 2 - 1, 1, 1) * _ProjectionParams.z);
-    float3 posVS = rayVS * Linear01Depth(getRawDepth(uv));
+    // Rendering parameters
+    float near = _ProjectionParams.y;
+    float far = _ProjectionParams.z;
+    float2 orthoSize = unity_OrthoParams.xy;
+    float isOrtho = unity_OrthoParams.w;
+
+    float z = getRawDepth(uv);
+    float2 uvCS = uv * 2 - 1;
+
+    // Perspective
+    float3 rayVSPersp = mul(unity_CameraInvProjection, float4(uvCS, 1, 1) * far);
+    float3 posVSPersp = rayVSPersp * Linear01Depth(z);
+
+    // Orthographic
+    float3 rayVSOrtho = float3(uvCS * orthoSize, 0);
+    #if defined(UNITY_REVERSED_Z)
+        float depthOrtho = -lerp(far, near, z);
+    #else
+        float depthOrtho = -lerp(near, far, z);
+    #endif
+    float3 posVSOrtho = float3(rayVSOrtho.xy, depthOrtho);
+
+    // Blending
+    float3 posVS = lerp(posVSPersp, posVSOrtho, isOrtho);
     float3 scenePosWS = mul(unity_CameraToWorld, float4(posVS.xy, -posVS.z, 1)).xyz;
-    return scenePosWS;
+
+    // Far plane exclusion
+    #if !defined(EXCLUDE_FAR_PLANE)
+        float mask = 1;
+    #elif defined(UNITY_REVERSED_Z)
+        float mask = z > 0;
+    #else
+        float mask = z < 1;
+    #endif
+
+    return scenePosWS * mask;
 }
 
 v2f vert(appdata v)
