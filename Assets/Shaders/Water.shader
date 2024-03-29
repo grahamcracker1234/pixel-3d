@@ -3,8 +3,10 @@ Shader "Custom/Water"
     Properties
     {
         _MainTex("Texture", 2D) = "white" {}
-        _Color("Color", Color) = (0, 0, 0, 1)
+        _DeepColor("Deep Color", Color) = (0, 0, 1, 1)
+        _ShallowColor("Shallow Color", Color) = (0, 1, 0, 1)
         _DepthFadeDist("Depth Fade Distance", Range(0, 10)) = 1
+        _ShadeBitDepth ("Shade Bit Depth", Range(0, 15)) = 5
     }
 
      SubShader
@@ -16,6 +18,8 @@ Shader "Custom/Water"
         }
 
         ZWrite Off
+
+        Blend SrcAlpha OneMinusSrcAlpha
 
         Pass
         {

@@ -1,4 +1,5 @@
 #include "UnityCG.cginc"
+#include "HSV.hlsl"
 
 struct appdata
 {
@@ -13,6 +14,9 @@ struct v2f
 };
 
 float _DepthFadeDist;
+float4 _DeepColor;
+float4 _ShallowColor;
+float _ShadeBitDepth;
 
 sampler2D _CameraDepthTexture;
 
@@ -74,7 +78,24 @@ fixed4 frag(v2f i) : SV_Target
     float2 uv = i.posSS.xy / i.posSS.w;
     float3 scenePosWS = getScenePosWS(uv);
     float waterDepth = (i.posWS - scenePosWS).y;
-    float depth = saturate(waterDepth / _DepthFadeDist);
+    float depth = waterDepth / _DepthFadeDist;
 
-    return fixed4(depth.xxx, 1);
+    depth = saturate(exp(-depth));
+    
+    // return fixed4(depth.xxx, 1);
+
+    // float4 color = lerp(_DeepColor, _ShallowColor, depth);
+    float4 color;
+    HSVLerp_half(_DeepColor, _ShallowColor, depth, color);
+    // float4 color = lerp(_DeepColor, _ShallowColor, depth);
+
+    color.rgb = RGBToHSV(color.rgb);
+
+    // color.x = floor(color.x * _ShadeBitDepth) / _ShadeBitDepth;
+    color.y = floor(color.y * _ShadeBitDepth) / _ShadeBitDepth;
+    color.z = floor(color.z * _ShadeBitDepth) / _ShadeBitDepth;
+
+    color.rgb = HSVToRGB(color.rgb);
+
+    return color;
 }
