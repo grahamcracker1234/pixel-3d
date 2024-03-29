@@ -3,7 +3,6 @@
 struct appdata
 {
     float4 vertex : POSITION;
-    // float2 uv : TEXCOORD0;
 };
 
 struct v2f
@@ -12,7 +11,6 @@ struct v2f
     float4 worldPos : TEXCOORD0;
     float4 screenPos : TEXCOORD1;
     float depth : Depth;
-    float3 viewDir : TEXCOORD2;
 };
 
 sampler2D _MainTex;
@@ -21,12 +19,14 @@ float4 _MainTex_ST;
 float4 _Color;
 float _DepthFadeDist;
 
-// sampler2D _CameraDepthNormalsTexture;
 sampler2D _CameraDepthTexture;
-float4 _CameraDepthTexture_TexelSize;
+
+bool isOrthographicCamera() {
+	return unity_OrthoParams.w;
+}
 
 float getRawDepth(float2 uv) { 
-    return SAMPLE_DEPTH_TEXTURE_LOD(_CameraDepthTexture, float4(uv, 0.0, 0.0)); 
+    return SAMPLE_DEPTH_TEXTURE_LOD(_CameraDepthTexture, float4(uv, 0, 0)); 
 }
  
 // inspired by keijiro's depth inverse projection
@@ -35,15 +35,25 @@ float getRawDepth(float2 uv) {
 // then multiplies that ray by the linear 01 depth
 float3 viewSpacePosAtScreenUV(float2 uv)
 {
-    float3 viewSpaceRay = mul(unity_CameraInvProjection, float4(uv * 2.0 - 1.0, 1.0, 1.0) * _ProjectionParams.z);
+    float3 viewPos = mul(unity_CameraInvProjection, float4(uv * 2 - 1, 1, 1) * _ProjectionParams.z);
     float rawDepth = getRawDepth(uv);
-    return viewSpaceRay * Linear01Depth(rawDepth);
+    return viewPos * Linear01Depth(rawDepth);
 }
- 
-float3 viewSpacePosAtPixelPosition(float2 vpos)
+
+float3 getSceneWorldPos(float2 uv)
 {
-    float2 uv = vpos * _CameraDepthTexture_TexelSize.xy;
-    return viewSpacePosAtScreenUV(uv);
+    if (isOrthographicCamera()) {
+        float near = _ProjectionParams.y;
+        float far = _ProjectionParams.z;
+        float rawDepth = getRawDepth(uv);
+        float distance = rawDepth * (far - near);
+        // float distance = rawDepth * (far - near) + near;
+        return mul(unity_CameraToWorld, float4(uv * 2 - 1, distance, 1)).xyz;
+        return mul(unity_CameraToWorld, float4(uv * 2 - 1, distance, 1)).xyz;
+    }
+    float3 viewPos = viewSpacePosAtScreenUV(uv);
+    float3 sceneWorldPos = mul(unity_CameraToWorld, float4(viewPos.xy, -viewPos.z, 1)).xyz;
+    return sceneWorldPos;
 }
 
 v2f vert(appdata v)
@@ -53,36 +63,22 @@ v2f vert(appdata v)
     o.worldPos = mul(unity_ObjectToWorld, v.vertex);
     o.screenPos = ComputeScreenPos(o.pos);
     o.depth = o.pos.z;
-    // o.viewDir = normalize(UnityWorldSpaceViewDir(v.vertex));
-    o.viewDir = UnityWorldSpaceViewDir(v.vertex);
-
-    // float depth;
-    // float3 normal;
-    // DecodeDepthNormal(tex2D(_CameraDepthNormalsTexture, o.screenUV), depth, normal);
-
-    // o.backgroundDepth = depth; 
-    // o.backgroundDepth = Linear01Depth(tex2Dproj(_CameraDepthTexture, UNITY_PROJ_COORD(o.screenUV)).r); 
-
-
-    // o.backgroundDepth = LinearEyeDepth(tex2Dproj(_CameraDepthTexture, UNITY_PROJ_COORD(o.pos)));
-    // o.backgroundDepth = tex2D(_CameraDepthTexture, o.screenUV);
     return o;
 }
 
 fixed4 frag(v2f i) : SV_Target
 {
-    // float depth;
-    // float3 normal;
-    // DecodeDepthNormal(tex2D(_CameraDepthNormalsTexture, i.screenUV), depth, normal);
 
     // float backgroundDepth = LinearEyeDepth(tex2Dproj(_CameraDepthTexture, UNITY_PROJ_COORD(i.screenUV)));
     
     float2 screenUV = i.screenPos.xy / i.screenPos.w;
     // float sceneDepth = Linear01Depth(tex2D(_CameraDepthTexture, screenUV));
 
-    float3 viewPos = viewSpacePosAtScreenUV(screenUV);
-    float3 sceneWorldPos = mul(unity_CameraToWorld, float4(viewPos.xy, -viewPos.z, 1.0)).xyz;
+    float3 sceneWorldPos = getSceneWorldPos(screenUV);
 
+    // if (isOrthographicCamera()) {
+        // return fixed4(sceneWorldPos.yyy, 1);
+    // }
 
     // float depth = sceneDepth - i.depth;
 

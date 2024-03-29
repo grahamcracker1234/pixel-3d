@@ -56,6 +56,9 @@ public class PostProcesser : MonoBehaviour
 
     void UpdateZoom()
     {
+        if (Camera.main == null)
+            return;
+
         Camera.main.orthographicSize = 1 / zoom;
         var farPlane = 20 / zoom;
         var pos = Camera.main.transform.localPosition;
