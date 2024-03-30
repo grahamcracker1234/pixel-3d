@@ -73,7 +73,7 @@
   - [x] Options: cloud coverage [0.66], speed [0.66], direction [0.66]
 - [ ] Water [6]
   - [ ] Renders water and other liquids with reflection and refraction [3]
-    - [ ] Renders [1]
+    - [x] Renders [1]
     - [ ] Reflection [1]
     - [ ] Refraction [1]
   - [ ] Reacts to movement with ripples [2]

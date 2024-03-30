@@ -1,4 +1,7 @@
 #include "UnityCG.cginc"
+#include "UnityLightingCommon.cginc"
+#include "Lighting.cginc"
+#include "AutoLight.cginc"
 #include "HSV.hlsl"
 
 struct appdata
@@ -11,6 +14,8 @@ struct v2f
     float4 posCS : SV_POSITION;
     float4 posWS : TEXCOORD0;
     float4 posSS : TEXCOORD1;
+    float4 posLS : TEXCOORD3;
+    SHADOW_COORDS(2)
 };
 
 float _DepthFadeDist;
@@ -70,6 +75,15 @@ v2f vert(appdata v)
     o.posCS = UnityObjectToClipPos(v.vertexOS);
     o.posWS = mul(unity_ObjectToWorld, v.vertexOS);
     o.posSS = ComputeScreenPos(o.posCS);
+
+    #if defined(DIRECTIONAL_COOKIE)
+        o.posLS = mul(unity_WorldToLight, o.posWS);
+    #else 
+        o.posLS = 0;
+    #endif
+
+    TRANSFER_SHADOW(o)
+
     return o;
 }
 
@@ -82,20 +96,21 @@ fixed4 frag(v2f i) : SV_Target
 
     depth = saturate(exp(-depth));
     
-    // return fixed4(depth.xxx, 1);
-
-    // float4 color = lerp(_DeepColor, _ShallowColor, depth);
     float4 color;
     HSVLerp_half(_DeepColor, _ShallowColor, depth, color);
-    // float4 color = lerp(_DeepColor, _ShallowColor, depth);
-
     color.rgb = RGBToHSV(color.rgb);
-
-    // color.x = floor(color.x * _ShadeBitDepth) / _ShadeBitDepth;
     color.y = floor(color.y * _ShadeBitDepth) / _ShadeBitDepth;
     color.z = floor(color.z * _ShadeBitDepth) / _ShadeBitDepth;
-
     color.rgb = HSVToRGB(color.rgb);
 
-    return color;
+    float4 shadow = SHADOW_ATTENUATION(i);
+    color *= shadow;
+
+    #if defined(DIRECTIONAL_COOKIE)
+        float4 cookieAttenuation = tex2D(_LightTexture0, i.posLS.xy);
+    #else
+        float4 cookieAttenuation = 1;
+    #endif
+
+    return color * cookieAttenuation;
 }

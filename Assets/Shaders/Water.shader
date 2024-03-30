@@ -40,11 +40,14 @@ Shader "Custom/Water"
             Tags { "LightMode" = "ForwardAdd" }
 
             CGPROGRAM
+            #pragma multi_compile_lightpass
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile_fwdbase
             #include "Water.hlsl"
             ENDCG
         }
+
+        UsePass "Legacy Shaders/VertexLit/SHADOWCASTER"
     }
 }
