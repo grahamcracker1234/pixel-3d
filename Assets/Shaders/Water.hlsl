@@ -31,6 +31,8 @@ float _RefractionScale;
 sampler2D _CameraDepthTexture;
 sampler2D _CameraOpaqueTexture;
 
+float4 _Phase;
+
 float getRawDepth(float2 uv) { 
     return SAMPLE_DEPTH_TEXTURE_LOD(_CameraDepthTexture, float4(uv, 0, 0)); 
 }
@@ -95,6 +97,8 @@ v2f vert(appdata v)
 
 fixed4 frag(v2f i) : SV_Target
 {
+
+    // return float4(sin(_Time.y) / 2 + 0.5, 0, 0, 1);
     float2 uv = i.posSS.xy / i.posSS.w;
     // uv = _Time * _RefractionSpeed + uv * _RefractionScale;
     
@@ -123,11 +127,9 @@ fixed4 frag(v2f i) : SV_Target
         float4 cookieAttenuation = 1;
     #endif
 
-    float4 baseColor = tex2D(_CameraOpaqueTexture, uv);
+    // float4 baseColor = tex2D(_CameraOpaqueTexture, uv);
+    // float4 finalColor = float4(lerp(baseColor.rgb, color.rgb, color.a), 1);
+    // return finalColor * cookieAttenuation;
 
-    float4 finalColor = float4(lerp(baseColor.rgb, color.rgb, color.a), 1);
-
-    return finalColor * cookieAttenuation;
-
-    // return color * cookieAttenuation;
+    return color * cookieAttenuation;
 }

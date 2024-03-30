@@ -27,7 +27,6 @@ public class SceneColorSetup : MonoBehaviour
                 name = "Setup Opaque Texture"
             };
             cmd.GetTemporaryRT(rtID, cam.pixelWidth, cam.pixelHeight, 0);
-            // cmd.SetRenderTarget(rtID);
             // cmd.Blit(null, rtID);
         }
         if (cmd2 == null)
