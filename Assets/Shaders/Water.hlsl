@@ -78,8 +78,6 @@ float3 getScenePosWS(float2 uv)
 
 v2f vert(appdata v)
 {
-
-    // v.vertexOS.y += sin(_Time.y * 0.5) * 0.1;
     v2f o;
     o.posCS = UnityObjectToClipPos(v.vertexOS);
     o.posWS = mul(unity_ObjectToWorld, v.vertexOS);
@@ -103,14 +101,28 @@ fixed4 frag(v2f i) : SV_Target
     float3 scenePosWS = getScenePosWS(uv);
     float waterDepth = (i.posWS - scenePosWS).y;
 
-    // Refraction
-    float2 offsetUV = (Unity_GradientNoise_float(uv / _RefractionScale + _Time * _RefractionSpeed, 1) * 2 - 1) * _RefractionStrength + uv;
+    // Refraction OLD (view space)
+    //// float2 offsetUV = (Unity_GradientNoise_float(uv / _RefractionScale + _Time * _RefractionSpeed, 1) * 2 - 1) * _RefractionStrength + uv;
 
+    // Refraction NEW (world space)
+    float2 offsetXZ_WS = (Unity_GradientNoise_float(i.posWS.xz / _RefractionScale + _Time * _RefractionSpeed, 1) * 2 - 1) * _RefractionStrength + i.posWS.xz;
+    float4 offsetWS = float4(offsetXZ_WS.x, i.posWS.y, offsetXZ_WS.y, 1);
+    float4 offsetOS = mul(unity_WorldToObject, offsetWS);
+    float4 offsetCS = UnityObjectToClipPos(offsetOS);
+    float4 offsetSS = ComputeScreenPos(offsetCS);
+    float2 offsetUV = offsetSS.xy / offsetSS.w;
+
+    
     // Update UV and depth based on refraction
-    uv = lerp(uv, offsetUV, saturate(waterDepth));
-    scenePosWS = getScenePosWS(uv);
-    waterDepth = (i.posWS - scenePosWS).y;
-    float depth = saturate(exp(-waterDepth / _DepthFadeDist));
+    float2 mixUV = lerp(uv, offsetUV, saturate(waterDepth));
+    float3 mixScenePosWS = getScenePosWS(mixUV);
+    float mixWaterDepth = (i.posWS - mixScenePosWS).y;
+    float depth = saturate(exp(-mixWaterDepth / _DepthFadeDist));
+    // bool isAboveWater = mixWaterDepth < 0;
+
+    // depth = lerp(depth, 0, isAboveWater);
+
+    // return float4(isAboveWater, 0, 0, 1);
 
     // Color
     float4 color;
@@ -119,10 +131,9 @@ fixed4 frag(v2f i) : SV_Target
     color.yz = floor(color.yz * _ShadeBitDepth) / _ShadeBitDepth;
     color.rgb = HSVToRGB(color.rgb);
 
-    // Shadow
-    float4 shadow = SHADOW_ATTENUATION(i);
-    return shadow;
-    color *= shadow;
+    // Shadow (NOT WORKING)
+    //// float4 shadow = SHADOW_ATTENUATION(i);
+    //// color *= shadow;
 
     // Cookie
     #if defined(DIRECTIONAL_COOKIE)
