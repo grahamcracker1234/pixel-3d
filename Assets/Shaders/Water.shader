@@ -20,7 +20,7 @@ Shader "Custom/Water"
             "PreviewType" = "Plane"
         }
 
-        ZWrite On
+        // ZWrite On
 
         Blend SrcAlpha OneMinusSrcAlpha
 

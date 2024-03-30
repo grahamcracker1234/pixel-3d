@@ -31,8 +31,6 @@ float _RefractionScale;
 sampler2D _CameraDepthTexture;
 sampler2D _CameraOpaqueTexture;
 
-float4 _Phase;
-
 float getRawDepth(float2 uv) { 
     return SAMPLE_DEPTH_TEXTURE_LOD(_CameraDepthTexture, float4(uv, 0, 0)); 
 }
@@ -79,6 +77,8 @@ float3 getScenePosWS(float2 uv)
 
 v2f vert(appdata v)
 {
+
+    // v.vertexOS.y += sin(_Time.y * 0.5) * 0.1;
     v2f o;
     o.posCS = UnityObjectToClipPos(v.vertexOS);
     o.posWS = mul(unity_ObjectToWorld, v.vertexOS);
@@ -97,14 +97,8 @@ v2f vert(appdata v)
 
 fixed4 frag(v2f i) : SV_Target
 {
-
-    // return float4(sin(_Time.y) / 2 + 0.5, 0, 0, 1);
-    float2 uv = i.posSS.xy / i.posSS.w;
-    // uv = _Time * _RefractionSpeed + uv * _RefractionScale;
-    
+    float2 uv = i.posSS.xy / i.posSS.w;    
     uv = (Unity_GradientNoise_float(uv / _RefractionScale + _Time * _RefractionSpeed, 1) * 2 - 1) * _RefractionStrength + uv;
-    // float2 offset = sin(_Time * _RefractionSpeed) * _WindStrength
-
 
     float3 scenePosWS = getScenePosWS(uv);
     float waterDepth = (i.posWS - scenePosWS).y;
@@ -118,8 +112,8 @@ fixed4 frag(v2f i) : SV_Target
     color.yz = floor(color.yz * _ShadeBitDepth) / _ShadeBitDepth;
     color.rgb = HSVToRGB(color.rgb);
 
-    // float4 shadow = SHADOW_ATTENUATION(i);
-    // color *= shadow;
+    float4 shadow = SHADOW_ATTENUATION(i);
+    color *= shadow;
 
     #if defined(DIRECTIONAL_COOKIE)
         float4 cookieAttenuation = tex2D(_LightTexture0, i.posLS.xy);

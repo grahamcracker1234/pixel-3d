@@ -1,7 +1,9 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 
-[RequireComponent(typeof(Camera))]
+[RequireComponent(typeof(Camera)),
+// RequireComponent(typeof(SceneColorSetup))
+]
 public class PostProcesser : MonoBehaviour
 {
     [Header("Grass Overlaying Shaders")]
