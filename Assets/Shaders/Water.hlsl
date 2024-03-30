@@ -102,7 +102,7 @@ fixed4 frag(v2f i) : SV_Target
     float waterDepth = (i.posWS - scenePosWS).y;
 
     // Refraction NEW (world space)
-    float2 offsetXZ_WS = (Unity_GradientNoise_float(i.posWS.xz / _RefractionScale + _Time * _RefractionSpeed, 1) * 2 - 1) * _RefractionStrength + i.posWS.xz;
+    float2 offsetXZ_WS = (Unity_GradientNoise_float(i.posWS.xz / _RefractionScale + -_Time * _RefractionSpeed, 1) * 2 - 1) * _RefractionStrength + i.posWS.xz;
     float4 offsetWS = float4(offsetXZ_WS.x, i.posWS.y, offsetXZ_WS.y, 1);
     float4 offsetOS = mul(unity_WorldToObject, offsetWS);
     float4 offsetCS = UnityObjectToClipPos(offsetOS);
