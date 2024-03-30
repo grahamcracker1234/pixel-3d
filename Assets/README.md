@@ -77,7 +77,7 @@
     - [ ] Reflection [1]
     - [x] Refraction [1]
   - [ ] Reacts to movement with ripples [2]
-    - [ ] Ripples [1]
+    - [x] Ripples [1]
     - [ ] React to movement [1]
   - [x] Outline edges for objects both inside and outside the water [0.5]
   - [x] Options: color, absorption, viscosity [0.5]
