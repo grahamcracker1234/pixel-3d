@@ -30,6 +30,9 @@ Material:
     m_Ints: []
     m_Floats:
     - _DepthFadeDist: 0.35
+    - _RefractionScale: 0.025
+    - _RefractionSpeed: 1
+    - _RefractionStrength: 0.005
     - _ShadeBitDepth: 5
     - _Transparency: 0.5
     m_Colors:

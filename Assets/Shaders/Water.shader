@@ -16,7 +16,7 @@ Shader "Custom/Water"
      {
         Tags {
             "Queue" = "Transparent"
-            "RenderType" = "Transparent"
+            "RenderType" = "Opaque"
             "PreviewType" = "Plane"
         }
 
