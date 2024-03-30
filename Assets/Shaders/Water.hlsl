@@ -3,6 +3,7 @@
 #include "Lighting.cginc"
 #include "AutoLight.cginc"
 #include "HSV.hlsl"
+#include "Noise.hlsl"
 
 struct appdata
 {
@@ -23,7 +24,12 @@ float4 _DeepColor;
 float4 _ShallowColor;
 float _ShadeBitDepth;
 
+float _RefractionSpeed;
+float _RefractionStrength;
+float _RefractionScale;
+
 sampler2D _CameraDepthTexture;
+sampler2D _CameraOpaqueTexture;
 
 float getRawDepth(float2 uv) { 
     return SAMPLE_DEPTH_TEXTURE_LOD(_CameraDepthTexture, float4(uv, 0, 0)); 
@@ -90,6 +96,12 @@ v2f vert(appdata v)
 fixed4 frag(v2f i) : SV_Target
 {
     float2 uv = i.posSS.xy / i.posSS.w;
+    // uv = _Time * _RefractionSpeed + uv * _RefractionScale;
+    
+    uv = (Unity_GradientNoise_float(uv / _RefractionScale + _Time * _RefractionSpeed, 1) * 2 - 1) * _RefractionStrength + uv;
+    // float2 offset = sin(_Time * _RefractionSpeed) * _WindStrength
+
+
     float3 scenePosWS = getScenePosWS(uv);
     float waterDepth = (i.posWS - scenePosWS).y;
     float depth = waterDepth / _DepthFadeDist;
@@ -99,12 +111,11 @@ fixed4 frag(v2f i) : SV_Target
     float4 color;
     HSVLerp_half(_DeepColor, _ShallowColor, depth, color);
     color.rgb = RGBToHSV(color.rgb);
-    color.y = floor(color.y * _ShadeBitDepth) / _ShadeBitDepth;
-    color.z = floor(color.z * _ShadeBitDepth) / _ShadeBitDepth;
+    color.yz = floor(color.yz * _ShadeBitDepth) / _ShadeBitDepth;
     color.rgb = HSVToRGB(color.rgb);
 
-    float4 shadow = SHADOW_ATTENUATION(i);
-    color *= shadow;
+    // float4 shadow = SHADOW_ATTENUATION(i);
+    // color *= shadow;
 
     #if defined(DIRECTIONAL_COOKIE)
         float4 cookieAttenuation = tex2D(_LightTexture0, i.posLS.xy);
@@ -112,5 +123,11 @@ fixed4 frag(v2f i) : SV_Target
         float4 cookieAttenuation = 1;
     #endif
 
-    return color * cookieAttenuation;
+    float4 baseColor = tex2D(_CameraOpaqueTexture, uv);
+
+    float4 finalColor = float4(lerp(baseColor.rgb, color.rgb, color.a), 1);
+
+    return finalColor * cookieAttenuation;
+
+    // return color * cookieAttenuation;
 }

@@ -7,6 +7,9 @@ Shader "Custom/Water"
         _ShallowColor("Shallow Color", Color) = (0, 1, 0, 1)
         _DepthFadeDist("Depth Fade Distance", Range(0, 10)) = 1
         _ShadeBitDepth ("Shade Bit Depth", Range(0, 15)) = 5
+        _RefractionSpeed("Refraction Speed", Range(0, 1)) = 0.5
+        _RefractionStrength("Refraction Strength", Range(0, 1)) = 0.5
+        _RefractionScale("Refraction Scale", Range(0, 1)) = 0.5
     }
 
      SubShader
@@ -17,7 +20,7 @@ Shader "Custom/Water"
             "PreviewType" = "Plane"
         }
 
-        ZWrite Off
+        ZWrite On
 
         Blend SrcAlpha OneMinusSrcAlpha
 

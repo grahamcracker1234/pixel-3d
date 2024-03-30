@@ -79,5 +79,5 @@
   - [ ] Reacts to movement with ripples [2]
     - [ ] Ripples [1]
     - [ ] React to movement [1]
-  - [ ] Outline edges for objects both inside and outside the water [0.5]
+  - [x] Outline edges for objects both inside and outside the water [0.5]
   - [ ] Options: color, absorption, viscosity [0.5]
