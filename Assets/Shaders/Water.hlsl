@@ -101,9 +101,6 @@ fixed4 frag(v2f i) : SV_Target
     float3 scenePosWS = getScenePosWS(uv);
     float waterDepth = (i.posWS - scenePosWS).y;
 
-    // Refraction OLD (view space)
-    //// float2 offsetUV = (Unity_GradientNoise_float(uv / _RefractionScale + _Time * _RefractionSpeed, 1) * 2 - 1) * _RefractionStrength + uv;
-
     // Refraction NEW (world space)
     float2 offsetXZ_WS = (Unity_GradientNoise_float(i.posWS.xz / _RefractionScale + _Time * _RefractionSpeed, 1) * 2 - 1) * _RefractionStrength + i.posWS.xz;
     float4 offsetWS = float4(offsetXZ_WS.x, i.posWS.y, offsetXZ_WS.y, 1);
@@ -111,18 +108,17 @@ fixed4 frag(v2f i) : SV_Target
     float4 offsetCS = UnityObjectToClipPos(offsetOS);
     float4 offsetSS = ComputeScreenPos(offsetCS);
     float2 offsetUV = offsetSS.xy / offsetSS.w;
-
     
     // Update UV and depth based on refraction
     float2 mixUV = lerp(uv, offsetUV, saturate(waterDepth));
     float3 mixScenePosWS = getScenePosWS(mixUV);
     float mixWaterDepth = (i.posWS - mixScenePosWS).y;
     float depth = saturate(exp(-mixWaterDepth / _DepthFadeDist));
-    // bool isAboveWater = mixWaterDepth < 0;
 
-    // depth = lerp(depth, 0, isAboveWater);
-
-    // return float4(isAboveWater, 0, 0, 1);
+    // https://forum.unity.com/threads/weird-bug-with-the-refraction-on-my-water-shader.395727/ 
+    // https://www.reddit.com/r/godot/comments/1argztb/water_refraction_shader_mask_out_objects_above/
+    bool shouldRefract = mixWaterDepth > 0;
+    depth *= shouldRefract;
 
     // Color
     float4 color;
