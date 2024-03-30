@@ -11,6 +11,7 @@ public class PostProcesser : MonoBehaviour
     public ShaderState grassState = ShaderState.On;
     public Shader grassReplacementShader;
     public float alphaThreshold = 0.5f;
+    private GameObject _grassCameraObject;
 
     [Header("Pixel Shader")]
     public ShaderState pixelState = ShaderState.On;
@@ -51,9 +52,25 @@ public class PostProcesser : MonoBehaviour
 
     void OnEnable()
     {
-        Camera.main.depthTextureMode = DepthTextureMode.DepthNormals;
+        Camera.main.depthTextureMode = DepthTextureMode.MotionVectors | DepthTextureMode.DepthNormals | DepthTextureMode.Depth;
         if (grassState != ShaderState.Debug)
             Camera.main.cullingMask = ~(1 << (int)Mathf.Log(grassLayer.value, 2));
+
+        if (grassState == ShaderState.On && _grassCameraObject == null)
+        {
+            _grassCameraObject = new GameObject("GrassCamera");
+            _grassCameraObject.transform.SetParent(Camera.main.transform);
+            _grassCameraObject.AddComponent<Camera>();
+        }
+    }
+
+    void OnDisable()
+    {
+        if (_grassCameraObject != null)
+        {
+            Destroy(_grassCameraObject);
+            _grassCameraObject = null;
+        }
     }
 
     void UpdateZoom()
@@ -170,19 +187,23 @@ public class PostProcesser : MonoBehaviour
 
         outlineMaterial.SetVector("_ScreenSize", screenSize);
 
+        var grassCamera = _grassCameraObject.GetComponent<Camera>();
+
         if (grassState == ShaderState.On && outlineState != ShaderState.Debug)
         {
-            var grassCameraObject = new GameObject("GrassCamera");
-            grassCameraObject.transform.SetParent(Camera.main.transform);
+            // var grassCameraObject = new GameObject("GrassCamera");
+            // grassCameraObject.transform.SetParent(Camera.main.transform);
 
-            var grassCamera = grassCameraObject.AddComponent<Camera>();
+            // var grassCamera = _grassCameraObject.GetComponent<Camera>();
             grassCamera.CopyFrom(Camera.main);
             grassCamera.targetTexture = grassTex;
             grassCamera.cullingMask = -1;
             grassCamera.clearFlags = CameraClearFlags.Nothing;
+            grassCamera.enabled = true;
             grassCamera.RenderWithShader(grassReplacementShader, "RenderType");
+            grassCamera.enabled = false;
 
-            Destroy(grassCameraObject);
+            // Destroy(grassCameraObject);
             grassBlendingMaterial.SetTexture("_GrassTex", grassTex);
         }
 
@@ -204,6 +225,9 @@ public class PostProcesser : MonoBehaviour
             Graphics.Blit(src, tempTex);
             Graphics.Blit(tempTex, dest);
         }
+
+        if (grassCamera != null)
+            grassCamera.targetTexture = null;
 
         RenderTexture.ReleaseTemporary(tempTex);
         RenderTexture.ReleaseTemporary(grassTex);

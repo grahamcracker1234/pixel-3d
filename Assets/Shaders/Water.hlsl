@@ -30,6 +30,7 @@ float _RefractionScale;
 
 sampler2D _CameraDepthTexture;
 sampler2D _CameraOpaqueTexture;
+sampler2D _CameraMotionVectorsTexture;
 
 float getRawDepth(float2 uv) { 
     return SAMPLE_DEPTH_TEXTURE_LOD(_CameraDepthTexture, float4(uv, 0, 0)); 
@@ -97,14 +98,23 @@ v2f vert(appdata v)
 
 fixed4 frag(v2f i) : SV_Target
 {
-    float2 uv = i.posSS.xy / i.posSS.w;    
-    uv = (Unity_GradientNoise_float(uv / _RefractionScale + _Time * _RefractionSpeed, 1) * 2 - 1) * _RefractionStrength + uv;
+    float2 uv = i.posSS.xy / i.posSS.w;
+    // float4 motion = tex2D(_CameraMotionVectorsTexture, uv);
+    // return motion;
+    float2 offsetUV = (Unity_GradientNoise_float(uv / _RefractionScale + _Time * _RefractionSpeed, 1) * 2 - 1) * _RefractionStrength + uv;
 
     float3 scenePosWS = getScenePosWS(uv);
     float waterDepth = (i.posWS - scenePosWS).y;
-    float depth = waterDepth / _DepthFadeDist;
 
+    uv = lerp(uv, offsetUV, saturate(waterDepth));
+
+    scenePosWS = getScenePosWS(uv);
+    waterDepth = (i.posWS - scenePosWS).y;
+
+    float depth = waterDepth / _DepthFadeDist;
     depth = saturate(exp(-depth));
+
+    // return float4(waterDepth, 0, 0, 1);
     
     float4 color;
     HSVLerp_half(_DeepColor, _ShallowColor, depth, color);
