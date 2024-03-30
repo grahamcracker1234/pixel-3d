@@ -98,42 +98,44 @@ v2f vert(appdata v)
 
 fixed4 frag(v2f i) : SV_Target
 {
+    // Original UV and depth
     float2 uv = i.posSS.xy / i.posSS.w;
-    // float4 motion = tex2D(_CameraMotionVectorsTexture, uv);
-    // return motion;
-    float2 offsetUV = (Unity_GradientNoise_float(uv / _RefractionScale + _Time * _RefractionSpeed, 1) * 2 - 1) * _RefractionStrength + uv;
-
     float3 scenePosWS = getScenePosWS(uv);
     float waterDepth = (i.posWS - scenePosWS).y;
 
-    uv = lerp(uv, offsetUV, saturate(waterDepth));
+    // Refraction
+    float2 offsetUV = (Unity_GradientNoise_float(uv / _RefractionScale + _Time * _RefractionSpeed, 1) * 2 - 1) * _RefractionStrength + uv;
 
+    // Update UV and depth based on refraction
+    uv = lerp(uv, offsetUV, saturate(waterDepth));
     scenePosWS = getScenePosWS(uv);
     waterDepth = (i.posWS - scenePosWS).y;
+    float depth = saturate(exp(-waterDepth / _DepthFadeDist));
 
-    float depth = waterDepth / _DepthFadeDist;
-    depth = saturate(exp(-depth));
-
-    // return float4(waterDepth, 0, 0, 1);
-    
+    // Color
     float4 color;
     HSVLerp_half(_DeepColor, _ShallowColor, depth, color);
     color.rgb = RGBToHSV(color.rgb);
     color.yz = floor(color.yz * _ShadeBitDepth) / _ShadeBitDepth;
     color.rgb = HSVToRGB(color.rgb);
 
+    // Shadow
     float4 shadow = SHADOW_ATTENUATION(i);
+    return shadow;
     color *= shadow;
 
+    // Cookie
     #if defined(DIRECTIONAL_COOKIE)
         float4 cookieAttenuation = tex2D(_LightTexture0, i.posLS.xy);
     #else
         float4 cookieAttenuation = 1;
     #endif
 
-    // float4 baseColor = tex2D(_CameraOpaqueTexture, uv);
-    // float4 finalColor = float4(lerp(baseColor.rgb, color.rgb, color.a), 1);
-    // return finalColor * cookieAttenuation;
+    // If _CameraOpaqueTexture is used, the following code can be used to blend the water with the scene
+    // This would be preferred over using transparent shaders
+    //// float4 baseColor = tex2D(_CameraOpaqueTexture, uv);
+    //// float4 finalColor = float4(lerp(baseColor.rgb, color.rgb, color.a), 1);
+    //// return finalColor * cookieAttenuation;
 
     return color * cookieAttenuation;
 }
