@@ -133,14 +133,16 @@ v2f vert(appdata v, uint svInstanceID : SV_InstanceID)
     localPosition *= _Scale;
     localPosition.x += sin((_Time.y + offset) * _WindSpeed + localPosition.y - 0.5) * _WindStrength * pow(v.uv.y, 5);
     float4 worldPosition = float4(rotate(localPosition, _Rotation) + _LeafData[instanceID].position, 1);
-    worldPosition.xyz += _LeafData[instanceID].normal * _Extrude;
+    // float3 normal = rotate(_LeafData[instanceID].normal, _Rotation);
+    float3 normal = _LeafData[instanceID].normal;
+    worldPosition.xyz += normal * _Extrude;
 
     float3 vertex = mul(unity_WorldToObject, worldPosition).xyz;
 
     v2f o;
     o.pos = UnityObjectToClipPos(vertex);
     o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-    o.normal = _LeafData[instanceID].normal;
+    o.normal = normal;
     o.worldPos = worldPosition;
     TRANSFER_SHADOW(o)
     
@@ -157,9 +159,12 @@ v2f vert(appdata v, uint svInstanceID : SV_InstanceID)
 // https://en.wikibooks.org/wiki/GLSL_Programming/Unity/Multiple_Lights
 float4 frag(v2f i) : COLOR
 {
+    
     fixed4 sample = tex2D(_MainTex, i.uv);
     if (sample.a < _AlphaCutout)
-        discard;
+    discard;
+
+    // return float4(i.normal, 1);
 
     #if defined(GRASS_REPLACEMENT)
         return float(0, 0, 0, 0);

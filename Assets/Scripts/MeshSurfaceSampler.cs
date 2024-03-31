@@ -50,7 +50,8 @@ public class MeshSurfaceSampler : MonoBehaviour
                     _mesh.normals[tris[i * 3]], _mesh.normals[tris[i * 3 + 1]], _mesh.normals[tris[i * 3 + 2]]);
 
                 pointList.Add(transform.TransformPoint(point));
-                normalList.Add(normal);
+                // normalList.Add(normal);
+                normalList.Add(transform.TransformDirection(normal));
                 // Debug.DrawRay(point, normal, Color.red, 10);
             }
         }

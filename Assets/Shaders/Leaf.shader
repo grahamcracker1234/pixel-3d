@@ -18,7 +18,7 @@ Shader "Custom/Leaf"
         _Scale("Scale", Range(0, 3)) = 0.5
         _WindSpeed("Wind Speed", Range(0, 1)) = 0.5
         _WindStrength("Wind Strength", Range(0, 1)) = 0.5
-        _Extrude("Extrude", Range(0, 1)) = 0.5
+        _Extrude("Extrude", Range(-5, 5)) = 0.5
     }
 
      SubShader
