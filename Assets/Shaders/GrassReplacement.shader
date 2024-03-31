@@ -48,6 +48,6 @@ Shader "Custom/GrassReplacement"
                 
         UsePass "Custom/Leaf/LEAF"
 
-        // UsePass "Custom/Leaf/LEAFADD"
+        UsePass "Custom/Leaf/LEAFADD"
     }
 }
