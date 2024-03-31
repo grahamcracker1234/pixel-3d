@@ -52,7 +52,8 @@ public class PostProcesser : MonoBehaviour
 
     void OnEnable()
     {
-        Camera.main.depthTextureMode = DepthTextureMode.MotionVectors | DepthTextureMode.DepthNormals | DepthTextureMode.Depth;
+        // Camera.main.depthTextureMode = DepthTextureMode.MotionVectors | DepthTextureMode.DepthNormals | DepthTextureMode.Depth;
+        Camera.main.depthTextureMode = DepthTextureMode.DepthNormals | DepthTextureMode.Depth;
         if (grassState != ShaderState.Debug)
             Camera.main.cullingMask = ~(1 << (int)Mathf.Log(grassLayer.value, 2));
 
@@ -188,6 +189,7 @@ public class PostProcesser : MonoBehaviour
         outlineMaterial.SetVector("_ScreenSize", screenSize);
 
         var grassCamera = _grassCameraObject.GetComponent<Camera>();
+        grassCamera.enabled = false;
 
         if (grassState == ShaderState.On && outlineState != ShaderState.Debug)
         {

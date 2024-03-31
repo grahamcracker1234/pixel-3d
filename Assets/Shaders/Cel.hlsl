@@ -1,7 +1,3 @@
-#pragma multi_compile_lightpass
-#pragma vertex vert
-#pragma fragment frag
-#pragma multi_compile_fwdbase
 #include "UnityCG.cginc"
 #include "UnityLightingCommon.cginc"
 #include "Lighting.cginc"

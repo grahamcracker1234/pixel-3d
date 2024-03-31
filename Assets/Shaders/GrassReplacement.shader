@@ -42,4 +42,12 @@ Shader "Custom/GrassReplacement"
 
         UsePass "Custom/Grass/GRASSADD"
     }
+    SubShader
+    {
+        Tags { "RenderType" = "TransparentLeaf" }
+                
+        UsePass "Custom/Leaf/LEAF"
+
+        // UsePass "Custom/Leaf/LEAFADD"
+    }
 }

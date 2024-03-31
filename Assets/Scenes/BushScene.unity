@@ -123,6 +123,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!108 &38728866 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 3298906188457390365, guid: 79972ebbc68a545c383d16456b6a9177, type: 3}
+  m_PrefabInstance: {fileID: 337698527}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &230812064
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -174,6 +179,18 @@ PrefabInstance:
     - target: {fileID: 6499996012299327601, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7406818813415170370, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
+      propertyPath: cloudState
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7406818813415170370, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
+      propertyPath: lightSource
+      value: 
+      objectReference: {fileID: 38728866}
+    - target: {fileID: 7406818813415170370, guid: e948be65be2984fbc9ddf9ace1a7d4d8, type: 3}
+      propertyPath: outlineState
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -339,7 +356,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!23 &506192475
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -457,7 +474,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1354816037
 MonoBehaviour:
   m_ObjectHideFlags: 0
