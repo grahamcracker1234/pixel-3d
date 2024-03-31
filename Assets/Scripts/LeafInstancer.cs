@@ -60,6 +60,30 @@ public class LeafInstancer : MonoBehaviour
         _meshSurfaceSampler.GeneratePoints();
     }
 
+    public Bounds GetBoundingBox()
+    {
+        Bounds boundingBox = new Bounds();
+
+        if (_meshSurfaceSampler.points != null && _meshSurfaceSampler.points.Length > 0)
+        {
+            Vector3 minPoint = _meshSurfaceSampler.points[0];
+            Vector3 maxPoint = _meshSurfaceSampler.points[0];
+
+            for (int i = 1; i < _meshSurfaceSampler.points.Length; i++)
+            {
+                minPoint = Vector3.Min(minPoint, _meshSurfaceSampler.points[i]);
+                maxPoint = Vector3.Max(maxPoint, _meshSurfaceSampler.points[i]);
+            }
+
+            boundingBox.SetMinMax(minPoint, maxPoint);
+        }
+
+        var extrude = _material.GetFloat("_Extrude");
+        boundingBox.Expand(boundingBox.size * extrude);
+
+        return boundingBox;
+    }
+
     public void Generate()
     {
         var count = _meshSurfaceSampler.points.Length;
@@ -102,7 +126,7 @@ public class LeafInstancer : MonoBehaviour
 
         _renderParams = new RenderParams(_material)
         {
-            // layer = (int)Mathf.Log(_grassLayer.value, 2),
+            layer = (int)Mathf.Log(_grassLayer.value, 2),
             worldBounds = new Bounds(Vector3.zero, 10000 * Vector3.one),
             matProps = block,
             receiveShadows = true,
@@ -136,6 +160,12 @@ public class LeafInstancer : MonoBehaviour
             Generate();
 
         UpdateRotation();
+
+
+        // Frustum culling check for the chunk
+        var frustumPlanes = GeometryUtility.CalculateFrustumPlanes(Camera.main);
+        if (!GeometryUtility.TestPlanesAABB(frustumPlanes, GetBoundingBox()))
+            return;
 
         // Render the grass
         Graphics.RenderMeshIndirect(_renderParams, _leafMesh, commandBuffer, commandCount);
