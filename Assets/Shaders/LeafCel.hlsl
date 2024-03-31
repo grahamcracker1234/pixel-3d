@@ -85,7 +85,9 @@ float3 celShading(v2f i, float attenuation, float4 color, float4 lightColor, flo
     }
     shade = screen(shade, _DarknessColor);
 
-    float4 shadow = SHADOW_ATTENUATION(i);
+    // TODO: Shadow attenuation
+    // float4 shadow = SHADOW_ATTENUATION(i);
+    float4 shadow = 1;
     shadow = step(_ShadowThreshold, shadow);
     #if 0
         shadow = screen(shadow, _DarknessColor);
@@ -158,6 +160,10 @@ float4 frag(v2f i) : COLOR
     fixed4 sample = tex2D(_MainTex, i.uv);
     if (sample.a < _AlphaCutout)
         discard;
+
+    #if defined(GRASS_REPLACEMENT)
+        return float(0, 0, 0, 0);
+    #endif
 
     // Light positions and attenuations
     float4 lightPos[4] = {

@@ -188,10 +188,14 @@ public class PostProcesser : MonoBehaviour
 
         outlineMaterial.SetVector("_ScreenSize", screenSize);
 
-        var grassCamera = _grassCameraObject.GetComponent<Camera>();
-        grassCamera.enabled = false;
+        Camera grassCamera = null;
+        if (grassState == ShaderState.On)
+        {
+            grassCamera = _grassCameraObject.GetComponent<Camera>();
+            grassCamera.enabled = false;
+        }
 
-        if (grassState == ShaderState.On && outlineState != ShaderState.Debug)
+        if (grassState == ShaderState.On && outlineState != ShaderState.Debug && grassCamera != null)
         {
             // var grassCameraObject = new GameObject("GrassCamera");
             // grassCameraObject.transform.SetParent(Camera.main.transform);

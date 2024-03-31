@@ -30,6 +30,7 @@ Shader "Custom/GrassReplacement"
             {
                 return 0;
             }
+            
             ENDCG
         }
         UsePass "Legacy Shaders/VertexLit/SHADOWCASTER"
@@ -45,6 +46,10 @@ Shader "Custom/GrassReplacement"
     SubShader
     {
         Tags { "RenderType" = "TransparentLeaf" }
+
+        CGPROGRAM
+        #define GRASS_REPLACEMENT 1
+        ENDCG
                 
         UsePass "Custom/Leaf/LEAF"
 

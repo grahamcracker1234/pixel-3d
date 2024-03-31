@@ -24,6 +24,7 @@ Shader "Custom/Leaf"
      SubShader
      {
         Tags {
+            // "RenderType" = "Opaque"
             "RenderType" = "TransparentLeaf"
             "PreviewType" = "Plane"
         }
