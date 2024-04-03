@@ -28,6 +28,8 @@ float _RefractionSpeed;
 float _RefractionStrength;
 float _RefractionScale;
 
+float _RefractionDepthFix;
+
 sampler2D _CameraDepthTexture;
 sampler2D _CameraOpaqueTexture;
 sampler2D _CameraMotionVectorsTexture;
@@ -117,7 +119,7 @@ fixed4 frag(v2f i) : SV_Target
 
     // https://forum.unity.com/threads/weird-bug-with-the-refraction-on-my-water-shader.395727/ 
     // https://www.reddit.com/r/godot/comments/1argztb/water_refraction_shader_mask_out_objects_above/
-    bool shouldRefract = mixWaterDepth > 0;
+    bool shouldRefract = smoothstep(-_RefractionDepthFix, 0, mixWaterDepth);
     depth *= shouldRefract;
 
     // Color

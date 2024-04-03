@@ -1,4 +1,4 @@
-Shader "Custom/Water"
+Shader "Custom/DebugWater"
 {
     Properties
     {
@@ -11,17 +11,16 @@ Shader "Custom/Water"
         _RefractionStrength("Refraction Strength", Range(0, 3)) = 1
         _RefractionScale("Refraction Scale", Range(0, 3)) = 1
         _RefractionDepthFix("Refraction Depth Fix", Range(0, 10)) = 1
+        _DebugLevel("Debug Level", Float) = 0
     }
 
-     SubShader
-     {
+    SubShader
+    {
         Tags {
             "Queue" = "Transparent"
             "RenderType" = "Opaque"
             "PreviewType" = "Plane"
         }
-
-        // ZWrite On
 
         Blend SrcAlpha OneMinusSrcAlpha
 
@@ -34,10 +33,9 @@ Shader "Custom/Water"
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile_fwdbase
-            #include "Water.hlsl"
+            #include "DebugWater.hlsl"
             ENDCG
         }
-
 
         Pass
         {
@@ -48,7 +46,7 @@ Shader "Custom/Water"
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile_fwdbase
-            #include "Water.hlsl"
+            #include "DebugWater.hlsl"
             ENDCG
         }
 
