@@ -100,3 +100,7 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Blender
+Blender/
+*.blend1
